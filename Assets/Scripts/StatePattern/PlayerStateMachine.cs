@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerStateMachine : MonoBehaviour
 {
     [Header("Components")]
     Rigidbody2D _rb;
+    Animator _animator;
 
     [Header("Layer Masks")]
     [SerializeField] LayerMask _groundLayer;
@@ -60,6 +62,9 @@ public class PlayerStateMachine : MonoBehaviour
     PlayerBaseState _currentState;
     PlayerStateFactory _states;
 
+    // Flip Player
+    bool facingRight = true;
+
     //Getters and Setters
     public Rigidbody2D Rb { get { return _rb; } }
     public float MovementAcceleration { get { return _movementAcceleration; } }
@@ -96,15 +101,16 @@ public class PlayerStateMachine : MonoBehaviour
     void Update()
     {
         CheckCollisions();
-        if (Input.GetButtonDown("Jump")) 
+        if (_horizontalDirection < 0f && facingRight)
         {
-            IsJumpPress = true;
+            FlipPlayer();
         }
-        else
+        else if (_horizontalDirection > 0f && !facingRight)
         {
-            IsJumpPress = false;
+            FlipPlayer();
         }
 
+        IsJumpPress = Input.GetButtonDown("Jump");
         _canJump = IsJumpPress && (_airHangTimeCounter > 0f || _grounded);
         _canAirJump = IsJumpPress && !_grounded && _airJumpValue > 0f && _airHangTimeCounter <= 0f;
         _currentState.UpdateStates();
@@ -119,6 +125,12 @@ public class PlayerStateMachine : MonoBehaviour
     public void ApplyAirLinearDrag()
     {
         _rb.drag = _airLinearDrag;
+    }
+
+    void FlipPlayer()
+    {
+        facingRight = !facingRight;
+        transform.Rotate(0f, 180f, 0f);
     }
 
     void CheckCollisions()
