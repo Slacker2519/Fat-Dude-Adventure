@@ -52,10 +52,6 @@ public class PlayerFallState : PlayerBaseState
         {
             SetSubState(Factory.Run());
         }
-        else
-        {
-            SetSubState(Factory.Idle());
-        }
     }
 
     void HandleFall()

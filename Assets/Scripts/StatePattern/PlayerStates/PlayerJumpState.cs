@@ -12,7 +12,6 @@ public class PlayerJumpState : PlayerBaseState
     public override void EnterState()
     {
         HandleJump();
-        Ctx.AirHangTimeCounter = 0f;
     }
 
     public override void UpdateState()
@@ -43,10 +42,6 @@ public class PlayerJumpState : PlayerBaseState
         if (Ctx.HorizontalDirection != 0f)
         {
             SetSubState(Factory.Run());
-        }
-        else
-        {
-            SetSubState(Factory.Idle());
         }
     }
 
