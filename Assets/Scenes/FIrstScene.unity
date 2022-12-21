@@ -1265,11 +1265,11 @@ MonoBehaviour:
   _movementAcceleration: 100
   _maxMoveSpeed: 25
   _groundLinearDrag: 7
-  _jumpForce: 55
+  _jumpForce: 53
   _airLinearDrag: 5
-  _fallMultiplier: 19
+  _fallMultiplier: 23
   _maxGravity: 200
-  _jumpGravity: 4.5
+  _jumpGravity: 4
   _airHangTime: 0.5
   _airJump: 1
   _groundRaycastLength: 1

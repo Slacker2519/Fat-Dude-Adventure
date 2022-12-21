@@ -67,6 +67,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     //Getters and Setters
     public Rigidbody2D Rb { get { return _rb; } }
+    public Animator PlayerAnimator { get { return _animator; } }
     public float MovementAcceleration { get { return _movementAcceleration; } }
     public float MaxMoveSpeed { get { return _maxMoveSpeed; } }
     public float GroundLinearDrag { get { return _groundLinearDrag; } }
@@ -91,6 +92,7 @@ public class PlayerStateMachine : MonoBehaviour
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
         _states = new PlayerStateFactory(this);
         _currentState = _states.Grounded();
         _airHangTimeCounter = _airHangTime;
