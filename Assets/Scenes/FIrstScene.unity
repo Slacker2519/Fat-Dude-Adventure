@@ -1180,7 +1180,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1742289601}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.9, y: 16.7, z: 0}
+  m_LocalPosition: {x: 38.9, y: 0.55, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1234,7 +1234,7 @@ Animator:
   m_GameObject: {fileID: 1742289601}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8fbce7ec38042f04c81e78d9196f0704, type: 2}
+  m_Controller: {fileID: 9100000, guid: 7b3933e637f0c8c48b18cf6bed9334e7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1262,16 +1262,16 @@ MonoBehaviour:
   _wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  _movementAcceleration: 200
-  _maxMoveSpeed: 20
-  _groundLinearDrag: 3
-  _jumpForce: 100
-  _airLinearDrag: 2
-  _fallMultiplier: 30
+  _movementAcceleration: 100
+  _maxMoveSpeed: 25
+  _groundLinearDrag: 7
+  _jumpForce: 55
+  _airLinearDrag: 5
+  _fallMultiplier: 19
   _maxGravity: 200
-  _jumpGravity: 2
+  _jumpGravity: 4.5
   _airHangTime: 0.5
-  _airJump: 0
+  _airJump: 1
   _groundRaycastLength: 1
   _groundRaycastOffset: 1
 --- !u!1 &1762753488
