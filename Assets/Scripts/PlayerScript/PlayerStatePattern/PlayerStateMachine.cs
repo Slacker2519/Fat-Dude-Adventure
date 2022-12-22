@@ -7,7 +7,6 @@ public class PlayerStateMachine : MonoBehaviour
 {
     [Header("Components")]
     Rigidbody2D _rb;
-    Animator _animator;
 
     [Header("Layer Masks")]
     [SerializeField] LayerMask _groundLayer;
@@ -40,24 +39,6 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] float _groundRaycastOffset;
     bool _grounded;
 
-    //[Header("Wall Interaction Variables")]
-    //[SerializeField] float _wallRaycastLength;
-    //[SerializeField] float _wallSlideGravity;
-    //[SerializeField] float _wallJumpForce;
-    //[SerializeField] float _wallJumpAngle;
-    //[SerializeField] float _wallDrag;
-    //[SerializeField] float _heightToWallSlide;
-    //bool _wallOnRight;
-    //bool _wallOnLeft;
-    //bool _canNotWallSlide;
-    //float xAngle, yAngle;
-
-    //[Header("Ledge Hang Variables")]
-    //[SerializeField] float _ledgeRaycastYOffset;
-    //[SerializeField] float _ledgeRaycastXOffset;
-    //bool _detectedLedgeOnLeft;
-    //bool _detectedLedgeOnRight;
-
     // State Variables
     PlayerBaseState _currentState;
     PlayerStateFactory _states;
@@ -67,7 +48,6 @@ public class PlayerStateMachine : MonoBehaviour
 
     //Getters and Setters
     public Rigidbody2D Rb { get { return _rb; } }
-    public Animator PlayerAnimator { get { return _animator; } }
     public float MovementAcceleration { get { return _movementAcceleration; } }
     public float MaxMoveSpeed { get { return _maxMoveSpeed; } }
     public float GroundLinearDrag { get { return _groundLinearDrag; } }
@@ -87,12 +67,12 @@ public class PlayerStateMachine : MonoBehaviour
     public bool CanAirJump { get { return _canAirJump; } }
     public bool Grounded { get { return _grounded; } }
     public PlayerBaseState CurrentState { get { return _currentState; } set { _currentState = value; } }
+    //public PlayerStateFactory State { get { return _states; } }
 
     // Start is called before the first frame update
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        _animator = GetComponent<Animator>();
         _states = new PlayerStateFactory(this);
         _currentState = _states.Grounded();
         _airHangTimeCounter = _airHangTime;
@@ -140,37 +120,15 @@ public class PlayerStateMachine : MonoBehaviour
         _grounded = Physics2D.Raycast(new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y), Vector2.down, _groundRaycastLength, _groundLayer) ||
                     Physics2D.Raycast(new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y), Vector2.down, _groundRaycastLength, _groundLayer) ||
                     Physics2D.Raycast(transform.position, Vector2.down, _groundRaycastLength, _groundLayer);
-
-        //_wallOnLeft = Physics2D.Raycast(transform.position, Vector2.left, _wallRaycastLength, _wallLayer);
-        //_wallOnRight = Physics2D.Raycast(transform.position, Vector2.right, _wallRaycastLength, _wallLayer);
-
-        //_canNotWallSlide = Physics2D.Raycast(transform.position, Vector2.down, _heightToWallSlide, _groundLayer);
-
-        //_detectedLedgeOnLeft = Physics2D.Raycast(new Vector2(transform.position.x + _ledgeRaycastXOffset, transform.position.y + _ledgeRaycastYOffset)
-        //                      , Vector2.left, _wallRaycastLength, _groundLayer);
-        //_detectedLedgeOnRight = Physics2D.Raycast(new Vector2(transform.position.x - _ledgeRaycastXOffset, transform.position.y + _ledgeRaycastYOffset)
-        //                      , Vector2.right, _wallRaycastLength, _groundLayer);
     }
 
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
+
         // ground raycast
         Gizmos.DrawLine(new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y), new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y) + Vector2.down * _groundRaycastLength);
         Gizmos.DrawLine(new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y), new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y) + Vector2.down * _groundRaycastLength);
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * _groundRaycastLength);
-
-        //// wall raycast
-        //Gizmos.DrawLine(transform.position, transform.position + Vector3.left * _wallRaycastLength);
-        //Gizmos.DrawLine(transform.position, transform.position + Vector3.right * _wallRaycastLength);
-
-        //// ground distance raycast
-        //Gizmos.DrawLine(transform.position, transform.position + Vector3.down * _heightToWallSlide);
-
-        // ledge raycast
-        //Gizmos.DrawLine(new Vector2(transform.position.x + _ledgeRaycastXOffset, transform.position.y + _ledgeRaycastYOffset)
-        //              , new Vector2(transform.position.x + _ledgeRaycastXOffset, transform.position.y + _ledgeRaycastYOffset) + Vector2.left * _wallRaycastLength);
-        //Gizmos.DrawLine(new Vector2(transform.position.x + _ledgeRaycastXOffset, transform.position.y + _ledgeRaycastYOffset)
-        //              , new Vector2(transform.position.x + _ledgeRaycastXOffset, transform.position.y + _ledgeRaycastYOffset) + Vector2.right * _wallRaycastLength);
     }
 }

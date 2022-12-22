@@ -48,8 +48,9 @@ public class PlayerJumpState : PlayerBaseState
     void HandleJump()
     {
         Ctx.Rb.gravityScale = Ctx.JumpGravity;
+        Ctx.ApplyAirLinearDrag();
         Ctx.Rb.velocity = new Vector2(Ctx.Rb.velocity.x, 0f);
         Ctx.Rb.AddForce(Vector2.up * Ctx.JumpForce, ForceMode2D.Impulse);
-        Ctx.ApplyAirLinearDrag();
+        Ctx.AirHangTimeCounter = 0f;
     }
 }
