@@ -8,7 +8,9 @@ enum PlayerStates
     Jump,
     Grounded,
     Fall,
-    AirJump
+    AirJump,
+    WallSlide,
+    WallJump
 }
 
 public class PlayerStateFactory
@@ -26,8 +28,8 @@ public class PlayerStateFactory
         _state[PlayerStates.Fall] = new PlayerFallState(_context, this);
         _state[PlayerStates.AirJump] = new PlayerAirJumpState(_context, this);
         //_state["LedgeHang"] = new PlayerLedgeHangState(_context, this);
-        //_state["WallSlide"] = new PlayerWallSlideState(_context, this);
-        //_state["WallJump"] = new PlayerWallJumpState(_context, this);
+        _state[PlayerStates.WallSlide] = new PlayerWallSlideState(_context, this);
+        _state[PlayerStates.WallJump] = new PlayerWallJumpState(_context, this);
     }
 
     public PlayerBaseState Grounded()
@@ -60,13 +62,13 @@ public class PlayerStateFactory
         return _state[PlayerStates.AirJump];
     }
 
-    //public PlayerBaseState WallSlide()
-    //{
+    public PlayerBaseState WallSlide()
+    {
+        return _state[PlayerStates.WallSlide];
+    }
 
-    //}
-
-    //public PlayerBaseState WallJump()
-    //{
-
-    //}
+    public PlayerBaseState WallJump()
+    {
+        return _state[PlayerStates.WallJump];
+    }
 }

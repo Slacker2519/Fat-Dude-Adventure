@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,31 +7,50 @@ public class PlayerWallSlideState : PlayerBaseState
 {
     public PlayerWallSlideState(PlayerStateMachine currentContext, PlayerStateFactory playerStateFactory) : base(currentContext, playerStateFactory)
     {
-
+        _isRootState = true;
     }
 
     public override void EnterState()
     {
-        throw new System.NotImplementedException();
+        Ctx.AirJumpValue = Ctx.AirJump;
+        HandleWallSlide();
     }
 
     public override void UpdateState()
     {
-        throw new System.NotImplementedException();
+        CheckSwitchStates();
+        InitializeSubState();
     }
 
     public override void ExitState()
     {
-        throw new System.NotImplementedException();
+        Ctx.Rb.gravityScale = Ctx.FallMultiplier;
+        Ctx.Rb.drag = Ctx.AirLinearDrag;
     }
 
     public override void CheckSwitchStates()
     {
-        throw new System.NotImplementedException();
+        if (Ctx.Grounded)
+        {
+            SwitchState(Factory.Grounded());
+        }
+        if ((!Ctx.NextToWall && !Ctx.Grounded) || (Ctx.NextToWall && !Ctx.Grounded && Ctx.GroundedTransition))
+        {
+            SwitchState(Factory.Fall());
+        }
     }
 
     public override void InitializeSubState()
     {
-        throw new System.NotImplementedException();
+        if (Ctx.HorizontalDirection != 0f)
+        {
+            SetSubState(Factory.Run());
+        }
+    }
+
+    void HandleWallSlide()
+    {
+        Ctx.Rb.gravityScale = Ctx.WallSlideGravity;
+        Ctx.Rb.drag = Ctx.WallSlideDrag;
     }
 }

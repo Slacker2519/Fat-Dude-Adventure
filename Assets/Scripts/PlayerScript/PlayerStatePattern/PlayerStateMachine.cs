@@ -34,6 +34,21 @@ public class PlayerStateMachine : MonoBehaviour
     int _airJumpValue;
     bool _canAirJump;
 
+    [Header("Walls Interaction Variables")]
+    [SerializeField] float _wallRaycastLength;
+    [SerializeField] float _wallSlideGravity;
+    [SerializeField] float _wallSlideDrag;
+    [SerializeField] float _wallJumpForce;
+    [SerializeField] float _wallJumpAngle;
+    [SerializeField] float _heightToWallSlide;
+    [SerializeField] float _wallsRaycastYOffSet;
+    bool _wallOnRight;
+    bool _wallOnLeft;
+    bool _nextToWall;
+    bool _groundedTransition;
+    bool _canWallSlide;
+    float xAngle, yAngle;
+
     [Header("Ground Collision Variables")]
     [SerializeField] float _groundRaycastLength;
     [SerializeField] float _groundRaycastOffset;
@@ -67,7 +82,13 @@ public class PlayerStateMachine : MonoBehaviour
     public bool CanAirJump { get { return _canAirJump; } }
     public bool Grounded { get { return _grounded; } }
     public PlayerBaseState CurrentState { get { return _currentState; } set { _currentState = value; } }
-    //public PlayerStateFactory State { get { return _states; } }
+    public bool CanWallSlide { get { return _canWallSlide; } }
+    public float WallSlideGravity { get { return _wallSlideGravity; } }
+    public float WallSlideDrag { get { return _wallSlideDrag; } }
+    public bool WallOnLeft { get { return _wallOnLeft; } }
+    public bool WallOnRight { get { return _wallOnRight; } }
+    public bool GroundedTransition { get { return _groundedTransition; } }
+    public bool NextToWall { get { return _nextToWall; } }
 
     // Start is called before the first frame update
     void Awake()
@@ -83,18 +104,20 @@ public class PlayerStateMachine : MonoBehaviour
     void Update()
     {
         CheckCollisions();
-        if (_horizontalDirection < 0f && facingRight)
+        if (_horizontalDirection < 0f && facingRight && !_canWallSlide)
         {
             FlipPlayer();
         }
-        else if (_horizontalDirection > 0f && !facingRight)
+        else if (_horizontalDirection > 0f && !facingRight && !_canWallSlide)
         {
             FlipPlayer();
         }
 
         IsJumpPress = Input.GetButtonDown("Jump");
+        _nextToWall = WallOnRight || WallOnRight;
         _canJump = IsJumpPress && (_airHangTimeCounter > 0f || _grounded);
         _canAirJump = IsJumpPress && !_grounded && _airJumpValue > 0f && _airHangTimeCounter <= 0f;
+        _canWallSlide = !_groundedTransition && _nextToWall;
         _currentState.UpdateStates();
         _horizontalDirection = GetInput().x;
     }
@@ -120,6 +143,11 @@ public class PlayerStateMachine : MonoBehaviour
         _grounded = Physics2D.Raycast(new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y), Vector2.down, _groundRaycastLength, _groundLayer) ||
                     Physics2D.Raycast(new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y), Vector2.down, _groundRaycastLength, _groundLayer) ||
                     Physics2D.Raycast(transform.position, Vector2.down, _groundRaycastLength, _groundLayer);
+
+        _wallOnLeft = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _wallsRaycastYOffSet), Vector2.left, _wallRaycastLength, _wallLayer);
+        _wallOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _wallsRaycastYOffSet), Vector2.right, _wallRaycastLength, _wallLayer);
+
+        _groundedTransition = Physics2D.Raycast(transform.position, Vector2.down, _heightToWallSlide, _groundLayer);
     }
 
     void OnDrawGizmos()
@@ -127,8 +155,21 @@ public class PlayerStateMachine : MonoBehaviour
         Gizmos.color = Color.red;
 
         // ground raycast
-        Gizmos.DrawLine(new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y), new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y) + Vector2.down * _groundRaycastLength);
-        Gizmos.DrawLine(new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y), new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y) + Vector2.down * _groundRaycastLength);
+        Gizmos.DrawLine(new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y), 
+        new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y) + Vector2.down * _groundRaycastLength);
+
+        Gizmos.DrawLine(new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y), 
+        new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y) + Vector2.down * _groundRaycastLength);
+
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * _groundRaycastLength);
+
+        // walls raycast
+        Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallsRaycastYOffSet), 
+        new Vector2(transform.position.x, transform.position.y + _wallsRaycastYOffSet) + Vector2.left * _wallRaycastLength);
+        
+        Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallsRaycastYOffSet), 
+        new Vector2(transform.position.x, transform.position.y + _wallsRaycastYOffSet) + Vector2.right * _wallRaycastLength);
+
+        Gizmos.DrawLine(transform.position, transform.position + Vector3.down * _heightToWallSlide);
     }
 }

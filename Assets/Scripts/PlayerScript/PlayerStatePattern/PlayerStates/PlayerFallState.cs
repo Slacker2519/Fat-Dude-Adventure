@@ -44,6 +44,10 @@ public class PlayerFallState : PlayerBaseState
         {
             SwitchState(Factory.AirJump());
         }
+        if (Ctx.CanWallSlide)
+        {
+            SwitchState(Factory.WallSlide());
+        }
     }
 
     public override void InitializeSubState()

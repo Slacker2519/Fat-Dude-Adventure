@@ -15,6 +15,7 @@ public class PlayerAnimation : MonoBehaviour
     static readonly int PlayerFall = Animator.StringToHash("JumpFall");
     static readonly int playerAirJump = Animator.StringToHash("WallJump");
     static readonly int playerStopping = Animator.StringToHash("IdleTransition");
+    static readonly int playerWallSlide = Animator.StringToHash("WallSlide");
 
     // Start is called before the first frame update
     void Start()
@@ -42,7 +43,6 @@ public class PlayerAnimation : MonoBehaviour
         if (_player.HorizontalDirection != 0f && _player.Grounded) return PlayerRun;
         if (_player.CanJump) return PlayerJump;
         if (!_player.Grounded || _player.Rb.velocity.y < -0.05f) return PlayerFall;
-        // if (_player.CanAirJump) return playerAirJump;
         else return PlayerIdle;
 
         int LockState(int s, float t)
@@ -54,11 +54,6 @@ public class PlayerAnimation : MonoBehaviour
 
     void DumbSolutionToFixAnimationBug()
     {
-        if (_player.CanAirJump)
-        {
-            _anim.CrossFade(playerAirJump, 0f);
-        }
-
         if (_player.HorizontalDirection == 0f && _player.Rb.velocity.x != 0f && _player.Grounded)
         {
             _anim.CrossFade(playerStopping, 0f);
@@ -66,6 +61,19 @@ public class PlayerAnimation : MonoBehaviour
         else if (_player.HorizontalDirection == 0f && Mathf.Abs(_player.Rb.velocity.x) <= 0.5f && _player.Grounded)
         {
             _anim.CrossFade(PlayerIdle, 0f);
+        }
+
+        if (_player.CanWallSlide)
+        {
+            _anim.CrossFade(playerWallSlide, 0f);   
+        }
+        else if (!_player.Grounded && !_player.NextToWall)
+        {
+            _anim.CrossFade(PlayerFall, 0f);
+        }
+        else if (_player.CanAirJump)
+        {
+            _anim.CrossFade(playerAirJump, 0f);
         }
     }
 }
