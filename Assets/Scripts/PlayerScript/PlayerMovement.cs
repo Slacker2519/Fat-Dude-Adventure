@@ -194,8 +194,6 @@ public class PlayerMovement : MonoBehaviour
         xAngle = Mathf.Cos(_wallJumpAngle * Mathf.Deg2Rad);
         yAngle = Mathf.Sin(_wallJumpAngle * Mathf.Deg2Rad);
 
-        //Vector2 dir = new Vector3(xAngle, yAngle, 0f) - transform.position;
-
         if (_wallOnLeft && Input.GetButtonDown("Jump"))
         {
             _rb.drag = _wallDrag;

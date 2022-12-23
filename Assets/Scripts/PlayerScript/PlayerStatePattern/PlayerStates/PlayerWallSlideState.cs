@@ -38,6 +38,10 @@ public class PlayerWallSlideState : PlayerBaseState
         {
             SwitchState(Factory.Fall());
         }
+        if (Ctx.IsJumpPress)
+        {
+            SwitchState(Factory.WallJump());
+        }
     }
 
     public override void InitializeSubState()

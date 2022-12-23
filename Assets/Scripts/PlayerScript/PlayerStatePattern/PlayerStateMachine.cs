@@ -47,7 +47,6 @@ public class PlayerStateMachine : MonoBehaviour
     bool _nextToWall;
     bool _groundedTransition;
     bool _canWallSlide;
-    float xAngle, yAngle;
 
     [Header("Ground Collision Variables")]
     [SerializeField] float _groundRaycastLength;
@@ -89,6 +88,8 @@ public class PlayerStateMachine : MonoBehaviour
     public bool WallOnRight { get { return _wallOnRight; } }
     public bool GroundedTransition { get { return _groundedTransition; } }
     public bool NextToWall { get { return _nextToWall; } }
+    public float WallJumpForce { get { return _wallJumpForce; } }
+    public float WallJumpAngle { get { return _wallJumpAngle; } }
 
     // Start is called before the first frame update
     void Awake()
@@ -114,7 +115,7 @@ public class PlayerStateMachine : MonoBehaviour
         }
 
         IsJumpPress = Input.GetButtonDown("Jump");
-        _nextToWall = WallOnRight || WallOnRight;
+        _nextToWall = _wallOnRight || _wallOnLeft;
         _canJump = IsJumpPress && (_airHangTimeCounter > 0f || _grounded);
         _canAirJump = IsJumpPress && !_grounded && _airJumpValue > 0f && _airHangTimeCounter <= 0f;
         _canWallSlide = !_groundedTransition && _nextToWall;

@@ -13,9 +13,10 @@ public class PlayerAnimation : MonoBehaviour
     static readonly int PlayerRun = Animator.StringToHash("Run");
     static readonly int PlayerJump = Animator.StringToHash("Jump");
     static readonly int PlayerFall = Animator.StringToHash("JumpFall");
-    static readonly int playerAirJump = Animator.StringToHash("WallJump");
-    static readonly int playerStopping = Animator.StringToHash("IdleTransition");
-    static readonly int playerWallSlide = Animator.StringToHash("WallSlide");
+    static readonly int PlayerAirJump = Animator.StringToHash("WallJump");
+    static readonly int PlayerStopping = Animator.StringToHash("IdleTransition");
+    static readonly int PlayerWallSlide = Animator.StringToHash("WallSlide");
+    static readonly int PlayerWallJump = Animator.StringToHash("WallJump");
 
     // Start is called before the first frame update
     void Start()
@@ -54,9 +55,9 @@ public class PlayerAnimation : MonoBehaviour
 
     void DumbSolutionToFixAnimationBug()
     {
-        if (_player.HorizontalDirection == 0f && _player.Rb.velocity.x != 0f && _player.Grounded)
+        if (_player.HorizontalDirection == 0f && _player.Rb.velocity.x != 0f && _player.Grounded && _player.Rb.velocity.y == 0f)
         {
-            _anim.CrossFade(playerStopping, 0f);
+            _anim.CrossFade(PlayerStopping, 0f);
         }
         else if (_player.HorizontalDirection == 0f && Mathf.Abs(_player.Rb.velocity.x) <= 0.5f && _player.Grounded)
         {
@@ -65,7 +66,7 @@ public class PlayerAnimation : MonoBehaviour
 
         if (_player.CanWallSlide)
         {
-            _anim.CrossFade(playerWallSlide, 0f);   
+            _anim.CrossFade(PlayerWallSlide, 0f);   
         }
         else if (!_player.Grounded && !_player.NextToWall)
         {
@@ -73,7 +74,11 @@ public class PlayerAnimation : MonoBehaviour
         }
         else if (_player.CanAirJump)
         {
-            _anim.CrossFade(playerAirJump, 0f);
+            _anim.CrossFade(PlayerAirJump, 0f);
+        }
+        if ((_player.WallOnLeft || _player.WallOnRight) && _player.IsJumpPress)
+        {
+            _anim.CrossFade(PlayerWallJump, 0f);
         }
     }
 }
