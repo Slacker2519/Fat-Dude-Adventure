@@ -49,6 +49,7 @@ public class PlayerGroundedState : PlayerBaseState
         else
         {
             SetSubState(Factory.Idle());
+            Ctx.Anim.Play("Idle");
         }
     }
 

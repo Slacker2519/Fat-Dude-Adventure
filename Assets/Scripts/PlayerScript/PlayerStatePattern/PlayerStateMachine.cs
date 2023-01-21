@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerStateMachine : MonoBehaviour
 {
+    public Animator Anim;
+
     [Header("Components")]
     Rigidbody2D _rb;
 
@@ -92,19 +94,39 @@ public class PlayerStateMachine : MonoBehaviour
     public float WallJumpAngle { get { return _wallJumpAngle; } }
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
+        Anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         _states = new PlayerStateFactory(this);
         _currentState = _states.Grounded();
         _airHangTimeCounter = _airHangTime;
-        //_currentState.EnterState();
     }
 
     // Update is called once per frame
     void Update()
     {
-        CheckCollisions();
+        CheckCollisions(_groundRaycastOffset, _groundRaycastLength, _groundLayer, _wallsRaycastYOffSet, _wallRaycastLength, _wallLayer, _heightToWallSlide);
+        CheckFlipPlayer();
+
+        IsJumpPress = Input.GetButtonDown("Jump");
+        _horizontalDirection = GetInput().x;
+
+        CheckToUpdateState();
+
+        _currentState.UpdateStates();
+    }
+
+    private void CheckToUpdateState()
+    {
+        _nextToWall = _wallOnRight || _wallOnLeft;
+        _canJump = IsJumpPress && (_airHangTimeCounter > 0f || _grounded);
+        _canAirJump = IsJumpPress && !_grounded && _airJumpValue > 0f && _airHangTimeCounter <= 0f;
+        _canWallSlide = !_groundedTransition && _nextToWall;
+    }
+
+    private void CheckFlipPlayer()
+    {
         if (_horizontalDirection < 0f && facingRight && !_canWallSlide)
         {
             FlipPlayer();
@@ -113,14 +135,6 @@ public class PlayerStateMachine : MonoBehaviour
         {
             FlipPlayer();
         }
-
-        IsJumpPress = Input.GetButtonDown("Jump");
-        _nextToWall = _wallOnRight || _wallOnLeft;
-        _canJump = IsJumpPress && (_airHangTimeCounter > 0f || _grounded);
-        _canAirJump = IsJumpPress && !_grounded && _airJumpValue > 0f && _airHangTimeCounter <= 0f;
-        _canWallSlide = !_groundedTransition && _nextToWall;
-        _currentState.UpdateStates();
-        _horizontalDirection = GetInput().x;
     }
 
     Vector2 GetInput()
@@ -139,16 +153,16 @@ public class PlayerStateMachine : MonoBehaviour
         transform.Rotate(0f, 180f, 0f);
     }
 
-    void CheckCollisions()
+    void CheckCollisions(float groundRaycastOffset, float groundRaycastLength, LayerMask groundLayer, float wallsRaycastYOffSet, float wallRaycastLength, LayerMask wallLayer, float heightToWallSlide)
     {
-        _grounded = Physics2D.Raycast(new Vector2(transform.position.x - _groundRaycastOffset, transform.position.y), Vector2.down, _groundRaycastLength, _groundLayer) ||
-                    Physics2D.Raycast(new Vector2(transform.position.x + _groundRaycastOffset, transform.position.y), Vector2.down, _groundRaycastLength, _groundLayer) ||
-                    Physics2D.Raycast(transform.position, Vector2.down, _groundRaycastLength, _groundLayer);
+        _grounded = Physics2D.Raycast(new Vector2(transform.position.x - groundRaycastOffset, transform.position.y), Vector2.down, groundRaycastLength, groundLayer) ||
+                    Physics2D.Raycast(new Vector2(transform.position.x + groundRaycastOffset, transform.position.y), Vector2.down, groundRaycastLength, groundLayer) ||
+                    Physics2D.Raycast(transform.position, Vector2.down, groundRaycastLength, groundLayer);
 
-        _wallOnLeft = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _wallsRaycastYOffSet), Vector2.left, _wallRaycastLength, _wallLayer);
-        _wallOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + _wallsRaycastYOffSet), Vector2.right, _wallRaycastLength, _wallLayer);
+        _wallOnLeft = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + wallsRaycastYOffSet), Vector2.left, wallRaycastLength, wallLayer);
+        _wallOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + wallsRaycastYOffSet), Vector2.right, wallRaycastLength, wallLayer);
 
-        _groundedTransition = Physics2D.Raycast(transform.position, Vector2.down, _heightToWallSlide, _groundLayer);
+        _groundedTransition = Physics2D.Raycast(transform.position, Vector2.down, heightToWallSlide, groundLayer);
     }
 
     void OnDrawGizmos()

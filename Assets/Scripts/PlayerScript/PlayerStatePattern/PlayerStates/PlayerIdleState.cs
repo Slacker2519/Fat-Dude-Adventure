@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class PlayerIdleState : PlayerBaseState
 {
-
     public PlayerIdleState(PlayerStateMachine currentContext, PlayerStateFactory playerStateFactory) : base(currentContext, playerStateFactory)
     {
 
     }
     public override void EnterState()
     {
-        
+        Ctx.Anim.Play("Idle");
     }
 
     public override void UpdateState()

@@ -11,6 +11,7 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void EnterState()
     {
+        Ctx.Anim.Play("Jump");
         HandleJump();
     }
 
