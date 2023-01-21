@@ -12,9 +12,8 @@ public class PlayerJump : MonoBehaviour
         _playerController = GetComponent<PlayerMovementManager>();
     }
 
-    public void JumpPlayer(float jumpForce , ref float jumpGravity)
+    public void JumpPlayer(float jumpForce)
     {
-        _playerController.Rb.gravityScale = jumpGravity;
         _playerController.Rb.velocity = new Vector2(_playerController.Rb.velocity.x, 0f);
         _playerController.Rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }

@@ -11,8 +11,10 @@ public class PlayerAirJump : MonoBehaviour
         _playerController = GetComponent<PlayerMovementManager>();
     }
 
-    void AirJumping()
+    public void AirJumping(ref int airJumpValue, float jumpForce)
     {
-
+        airJumpValue--;
+        _playerController.Rb.velocity = new Vector2(_playerController.Rb.velocity.x, 0f);
+        _playerController.Rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
 }

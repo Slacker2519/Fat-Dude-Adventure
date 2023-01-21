@@ -40,9 +40,9 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (Time.time < _lockedTill) return _currentState;
 
-        if (_onAir) return Jump;
+        if (_onAir) return LockState(Jump, _animDuration);
         if (_playerController.HorizontalDirection == 0f && _playerController.Rb.velocity.x != 0 && _playerController.Grounded) return IdleTransition;
-        if (_playerController.Grounded) return _playerController.Rb.velocity.x == 0f ? Idle : Run;
+        if (_playerController.Rb.velocity.y == 0f) return _playerController.Rb.velocity.x == 0f ? Idle : Run;
         return _playerController.Rb.velocity.y != 0 && !_playerController.Grounded ? Jump : Idle;
 
         int LockState(int s, float t)

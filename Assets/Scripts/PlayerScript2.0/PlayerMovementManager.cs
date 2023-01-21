@@ -8,6 +8,7 @@ public class PlayerMovementManager : MonoBehaviour
     PlayerRun _playerRun;
     PlayerFall _playerFall;
     PlayerJump _playerJump;
+    PlayerAirJump _playerAirJump;
 
     [Header("MovePlayerValues")]
     [SerializeField] float _playerAcceleration;
@@ -20,10 +21,15 @@ public class PlayerMovementManager : MonoBehaviour
     [SerializeField] float _jumpGravity;
     bool _isJumpPress => Input.GetKeyDown(KeyCode.Space);
     bool _canJump;
+    bool _jumping => _rb.velocity.y >=0 && !_grounded;
 
     [Header("PlayerFallValues")]
     [SerializeField] float _fallMultiPlier;
     [SerializeField] float _maxGravity;
+
+    [Header("PlayerAirJumpValue")]
+    [SerializeField] int _airJumpNumber;
+    int _airJumpValue;
 
     [Header("GroundCheckValues")]
     [SerializeField] LayerMask _groundLayer;
@@ -54,7 +60,9 @@ public class PlayerMovementManager : MonoBehaviour
         _playerRun = GetComponent<PlayerRun>();
         _playerFall = GetComponent<PlayerFall>();
         _playerJump = GetComponent<PlayerJump>();
+        _playerAirJump = GetComponent<PlayerAirJump>();
         _airHangTimeCounter = _airHangTime;
+        _airJumpValue = _airJumpNumber;
     }
 
     // Update is called once per frame
@@ -64,18 +72,17 @@ public class PlayerMovementManager : MonoBehaviour
         PhysicsOnAir(_airDrag);
         FlipPlayer();
         CoyoteTime();
+        OnAirSetting();
+    }
 
+    private void OnAirSetting()
+    {
         _canJump = _airHangTimeCounter > 0f || _grounded ? true : false;
 
-        if (_canJump && _isJumpPress) 
-        {
-            _playerJump.JumpPlayer(_jumpForce, ref _jumpGravity);
-        }
-
-        if (_rb.velocity.y <= 0f)
-        {
-            _playerFall.FallingPlayer(_fallMultiPlier, _maxGravity);
-        }
+        if (_jumping) _rb.gravityScale = _jumpGravity;
+        if (_canJump && _isJumpPress) _playerJump.JumpPlayer(_jumpForce);
+        if (_rb.velocity.y <= 0f) _playerFall.FallingPlayer(_fallMultiPlier, _maxGravity);
+        if (!_canJump && !_grounded && _isJumpPress && _airJumpValue > 0f) _playerAirJump.AirJumping(ref _airJumpValue, _jumpForce);
     }
 
     void FixedUpdate()
@@ -105,6 +112,7 @@ public class PlayerMovementManager : MonoBehaviour
         if (_grounded) 
         {
             _canJump = true;
+            _airJumpValue = _airJumpNumber;
             _rb.gravityScale = groundedGravity;
             _rb.drag = groundedDrag;
         }
