@@ -1072,6 +1072,7 @@ GameObject:
   - component: {fileID: 2073218560}
   - component: {fileID: 2073218564}
   - component: {fileID: 2073218565}
+  - component: {fileID: 2073218566}
   - component: {fileID: 2073218559}
   m_Layer: 0
   m_Name: Player
@@ -1217,6 +1218,8 @@ MonoBehaviour:
   _airJumpNumber: 1
   _wallSlideDrag: 20
   _wallSlideGravity: 2
+  _wallJumpAngle: 40
+  _wallJumpForce: 15
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -1225,7 +1228,7 @@ MonoBehaviour:
   _wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  _wallRaycastLength: 0.27
+  _wallRaycastLength: 0.35
   _wallRaycastOffset: 0.6
   _groundedGravity: 1
   _groundedDrag: 7
@@ -1287,7 +1290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a656d90d5ff136b42a7fd7a4126f59c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animDuration: 0.15
+  _jumpAnimDuration: 0
+  _wallJumpAnimDuration: 0.5
 --- !u!114 &2073218564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1310,5 +1314,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 38da88cdfedf1d44f9a6d8cd3fe498d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2073218566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073218553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a98dae09e79c8cf42acd0ee51728cba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

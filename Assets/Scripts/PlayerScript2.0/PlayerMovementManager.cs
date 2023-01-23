@@ -10,6 +10,7 @@ public class PlayerMovementManager : MonoBehaviour
     PlayerJump _playerJump;
     PlayerAirJump _playerAirJump;
     PlayerWallSlide _playerWallSlide;
+    PlayerWallJump _playerWallJump;
 
     [Header("MovePlayerValues")]
     [SerializeField] float _playerAcceleration;
@@ -36,6 +37,11 @@ public class PlayerMovementManager : MonoBehaviour
     [SerializeField] float _wallSlideDrag;
     [SerializeField] float _wallSlideGravity;
     bool _wallSliding => (_wallOnLeft || _wallOnRight) && !_grounded;
+
+    [Header("PlayerWallJump")]
+    [SerializeField] float _wallJumpAngle;
+    [SerializeField] long _wallJumpForce;
+    bool _wallJump => (_wallOnLeft || _wallOnRight) && !_grounded && _isJumpPress;
 
     [Header("GroundCheckValues")]
     [SerializeField] LayerMask _groundLayer;
@@ -66,6 +72,7 @@ public class PlayerMovementManager : MonoBehaviour
     public float HorizontalDirection { get { return _horizontalDirection; } }
     public bool Grounded { get { return _grounded; } }
     public bool WallSliding { get { return _wallSliding; } }
+    public bool WallJump { get { return _wallJump; } }
 
     // Start is called before the first frame update
     void Start()
@@ -76,6 +83,7 @@ public class PlayerMovementManager : MonoBehaviour
         _playerJump = GetComponent<PlayerJump>();
         _playerAirJump = GetComponent<PlayerAirJump>();
         _playerWallSlide = GetComponent<PlayerWallSlide>();
+        _playerWallJump = GetComponent <PlayerWallJump>();
         _airHangTimeCounter = _airHangTime;
         _airJumpValue = _airJumpNumber;
     }
@@ -107,6 +115,8 @@ public class PlayerMovementManager : MonoBehaviour
         if (_rb.velocity.y <= 0f) _playerFall.FallingPlayer(_fallMultiPlier, _maxGravity);
         if (!_canJump && !_grounded && _isJumpPress && _airJumpValue > 0f) _playerAirJump.AirJumping(ref _airJumpValue, _jumpForce);
         if ((_wallOnLeft || _wallOnRight) && !_grounded) _playerWallSlide.WallSlide(_wallSlideGravity, _wallSlideDrag);
+        if (_wallOnLeft && !_grounded && _isJumpPress) _playerWallJump.JumpToTheRight(_wallJumpAngle, _wallJumpForce);
+        if (_wallOnRight && !_grounded && _isJumpPress) _playerWallJump.JumpToTheLeft(_wallJumpAngle, _wallJumpForce);
     }
 
     void CoyoteTime()

@@ -9,11 +9,13 @@ public class PlayerAnimator : MonoBehaviour
     static readonly int IdleTransition = Animator.StringToHash("IdleTransition");
     static readonly int Jump = Animator.StringToHash("JumpFall");
     static readonly int WallSlide = Animator.StringToHash("WallSlide");
+    static readonly int WallJump = Animator.StringToHash("WallJump");
 
     Animator _anim;
     PlayerMovementManager _playerController;
     Rigidbody2D _rb;
-    [SerializeField] float _animDuration;
+    [SerializeField] float _jumpAnimDuration;
+    [SerializeField] float _wallJumpAnimDuration;
     float _lockedTill;
     int _currentState;
     bool _onAir;
@@ -41,8 +43,9 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (Time.time < _lockedTill) return _currentState;
 
+        if (_playerController.WallJump) return LockState(WallJump, _wallJumpAnimDuration);
         if (_playerController.WallSliding) return WallSlide;
-        if (_onAir) return LockState(Jump, _animDuration);
+        if (_onAir) return LockState(Jump, _jumpAnimDuration);
         if (_playerController.HorizontalDirection == 0f && _playerController.Rb.velocity.x != 0 && _playerController.Grounded) return IdleTransition;
         if (_playerController.Rb.velocity.y == 0f) return _playerController.HorizontalDirection == 0f ? Idle : Run;
         return _playerController.Rb.velocity.y != 0 && !_playerController.Grounded ? Jump : Idle;
