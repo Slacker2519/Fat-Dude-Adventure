@@ -12,9 +12,8 @@ public class PlayerWallSlide : MonoBehaviour
         _playerController = GetComponent<PlayerMovementManager>();
     }
 
-    public void WallSlide(float wallSlideGravity, float wallSLideDrag)
+    public void WallSlide(float wallSlideGravity)
     {
         _playerController.Rb.gravityScale = wallSlideGravity;
-        _playerController.Rb.drag = wallSLideDrag;
     }
 }

@@ -287,7 +287,7 @@ GameObject:
   - component: {fileID: 560665769}
   - component: {fileID: 560665768}
   - component: {fileID: 560665767}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -380,8 +380,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 560665766}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 9, z: 1}
+  m_LocalPosition: {x: 7, y: 0.0097, z: 0}
+  m_LocalScale: {x: 1, y: 9.0198, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 343780043}
@@ -731,7 +731,7 @@ GameObject:
   - component: {fileID: 1428131847}
   - component: {fileID: 1428131846}
   - component: {fileID: 1428131845}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -824,8 +824,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1428131844}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 9, z: 1}
+  m_LocalPosition: {x: -7, y: 0.0055, z: 0}
+  m_LocalScale: {x: 1, y: 9.010799, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 343780043}
@@ -1073,6 +1073,7 @@ GameObject:
   - component: {fileID: 2073218564}
   - component: {fileID: 2073218565}
   - component: {fileID: 2073218566}
+  - component: {fileID: 2073218567}
   - component: {fileID: 2073218559}
   m_Layer: 0
   m_Name: Player
@@ -1216,10 +1217,12 @@ MonoBehaviour:
   _fallMultiPlier: 35
   _maxGravity: 100
   _airJumpNumber: 1
-  _wallSlideDrag: 20
-  _wallSlideGravity: 2
+  _wallSlideGravity: 0.7
   _wallJumpAngle: 40
-  _wallJumpForce: 15
+  _wallJumpForce: 20
+  _dashVelocity: 35
+  _dashingDuration: 0.35
+  _dashCoolDown: 3
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -1228,12 +1231,13 @@ MonoBehaviour:
   _wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  _wallRaycastLength: 0.35
+  _wallRaycastLength: 0.4
   _wallRaycastOffset: 0.6
   _groundedGravity: 1
   _groundedDrag: 7
   _airDrag: 6
-  _airHangTime: 1
+  _onWallHorizontalVelocity: 10
+  _airHangTime: 0.2
 --- !u!114 &2073218560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1290,8 +1294,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a656d90d5ff136b42a7fd7a4126f59c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumpAnimDuration: 0
   _wallJumpAnimDuration: 0.5
+  _dashAnimDuration: 0.2
 --- !u!114 &2073218564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1326,5 +1330,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a98dae09e79c8cf42acd0ee51728cba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2073218567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073218553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411db43498ef5574dbdb88bf6b1b126f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

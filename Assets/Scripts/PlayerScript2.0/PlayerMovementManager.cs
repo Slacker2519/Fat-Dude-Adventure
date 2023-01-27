@@ -11,9 +11,11 @@ public class PlayerMovementManager : MonoBehaviour
     PlayerAirJump _playerAirJump;
     PlayerWallSlide _playerWallSlide;
     PlayerWallJump _playerWallJump;
+    PlayerDash _playerDash;
 
     [Header("MovePlayerValues")]
-    [SerializeField] float _playerAcceleration;
+    [SerializeField] float _playerAcceleration = 75f;
+    float _playerCurrentAcceleration;
     [SerializeField] float _maxMoveSpeed;
     float _horizontalDirection;
     //bool changingDirection => (_rb.velocity.x > 0f && _playerRun.HorizontalDirection < 0f) || (_rb.velocity.x < 0f && _playerRun.HorizontalDirection > 0f);
@@ -34,7 +36,6 @@ public class PlayerMovementManager : MonoBehaviour
     int _airJumpValue;
 
     [Header("PlayerWallSlideValues")]
-    [SerializeField] float _wallSlideDrag;
     [SerializeField] float _wallSlideGravity;
     bool _wallSliding => (_wallOnLeft || _wallOnRight) && !_grounded;
 
@@ -42,6 +43,13 @@ public class PlayerMovementManager : MonoBehaviour
     [SerializeField] float _wallJumpAngle;
     [SerializeField] long _wallJumpForce;
     bool _wallJump => (_wallOnLeft || _wallOnRight) && !_grounded && _isJumpPress;
+
+    [Header("PlayerDash")]
+    [SerializeField] float _dashVelocity;
+    [SerializeField] float _dashingDuration;
+    [SerializeField] float _dashCoolDown;
+    bool _canDash = true;
+    bool _isDashing = false;
 
     [Header("GroundCheckValues")]
     [SerializeField] LayerMask _groundLayer;
@@ -63,6 +71,9 @@ public class PlayerMovementManager : MonoBehaviour
     [Header("OnAirValues")]
     [SerializeField] float _airDrag;
 
+    [Header("OnWallValues")]
+    [SerializeField] float _onWallHorizontalVelocity;
+
     [Header("HangTimeOnAir")]
     [SerializeField] float _airHangTime;
     float _airHangTimeCounter;
@@ -73,6 +84,7 @@ public class PlayerMovementManager : MonoBehaviour
     public bool Grounded { get { return _grounded; } }
     public bool WallSliding { get { return _wallSliding; } }
     public bool WallJump { get { return _wallJump; } }
+    public bool IsDashing { get { return _isDashing; } }
 
     // Start is called before the first frame update
     void Start()
@@ -84,6 +96,8 @@ public class PlayerMovementManager : MonoBehaviour
         _playerAirJump = GetComponent<PlayerAirJump>();
         _playerWallSlide = GetComponent<PlayerWallSlide>();
         _playerWallJump = GetComponent <PlayerWallJump>();
+        _playerDash = GetComponent<PlayerDash>();
+        _playerCurrentAcceleration = _playerAcceleration;
         _airHangTimeCounter = _airHangTime;
         _airJumpValue = _airJumpNumber;
     }
@@ -91,22 +105,26 @@ public class PlayerMovementManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        PhysicsOnGround(_groundedGravity, _groundedDrag);
-        PhysicsOnAir(_airDrag);
-        PhysicsOnWall();
+        if (_isDashing) return;
+
         FlipPlayer();
         CoyoteTime();
-        JumpCondition();
+        MoveFunctionCall();
     }
 
     void FixedUpdate()
     {
+        if (_isDashing) return;
+
+        PhysicsOnGround(_groundedGravity, _groundedDrag);
+        PhysicsOnAir(_airDrag);
+        PhysicsOnWall();
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
-        _playerRun.MovePlayer(_playerAcceleration, _maxMoveSpeed, ref _horizontalDirection);
+        _playerRun.MovePlayer(_playerCurrentAcceleration, _maxMoveSpeed, ref _horizontalDirection);
     }
 
-    private void JumpCondition()
+    void MoveFunctionCall()
     {
         _canJump = _airHangTimeCounter > 0f || _grounded || _wallOnLeft || _wallOnRight ? true : false;
 
@@ -114,9 +132,27 @@ public class PlayerMovementManager : MonoBehaviour
         if (_canJump && _isJumpPress) _playerJump.JumpPlayer(_jumpForce);
         if (_rb.velocity.y <= 0f) _playerFall.FallingPlayer(_fallMultiPlier, _maxGravity);
         if (!_canJump && !_grounded && _isJumpPress && _airJumpValue > 0f) _playerAirJump.AirJumping(ref _airJumpValue, _jumpForce);
-        if ((_wallOnLeft || _wallOnRight) && !_grounded) _playerWallSlide.WallSlide(_wallSlideGravity, _wallSlideDrag);
+        if ((_wallOnLeft || _wallOnRight) && !_grounded) _playerWallSlide.WallSlide(_wallSlideGravity);
         if (_wallOnLeft && !_grounded && _isJumpPress) _playerWallJump.JumpToTheRight(_wallJumpAngle, _wallJumpForce);
         if (_wallOnRight && !_grounded && _isJumpPress) _playerWallJump.JumpToTheLeft(_wallJumpAngle, _wallJumpForce);
+        if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash)
+        {
+            StartCoroutine(DashCoolDown());
+        }
+    }
+
+    IEnumerator DashCoolDown()
+    {
+        _canDash = false;
+        _isDashing = true;
+        float _originalGravity = _rb.gravityScale;
+        _playerDash.Dash(_dashVelocity);
+        yield return new WaitForSeconds(_dashingDuration);
+        _rb.velocity = Vector2.zero;
+        _rb.gravityScale = _originalGravity;
+        _isDashing = false;
+        yield return new WaitForSeconds(_dashCoolDown);
+        _canDash = true;
     }
 
     void CoyoteTime()
@@ -161,19 +197,25 @@ public class PlayerMovementManager : MonoBehaviour
         {
             _canJump = true;
             _airJumpValue = _airJumpNumber;
+            _playerCurrentAcceleration = _onWallHorizontalVelocity;
         }
+
+        if (!_wallSliding) _playerCurrentAcceleration = _playerAcceleration;
     }
 
     void FlipPlayer()
     {
         if (_horizontalDirection < 0f)
         {
-            transform.localScale = new Vector3(-1, 1f, 1f);
+            transform.localScale = new Vector3(-1f, 1f, 1f);
         }
         else if (_horizontalDirection > 0f)
         {
-            transform.localScale = new Vector3(1, 1f, 1f);
+            transform.localScale = new Vector3(1f, 1f, 1f);
         }
+
+        if (_wallOnLeft) transform.localScale = new Vector3(-1f, 1f, 1f);
+        if (_wallOnRight) transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
     void GroundCheck(float groundRaycastOffset, float groundRaycastLength, LayerMask groundLayer)
