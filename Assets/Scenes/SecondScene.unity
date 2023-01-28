@@ -1220,6 +1220,8 @@ MonoBehaviour:
   _wallSlideGravity: 0.7
   _wallJumpAngle: 40
   _wallJumpForce: 20
+  _playerAfterImagePrefabs: {fileID: 7600795638336627722, guid: e8c8b57eb49f2004db14aaf544173dd7, type: 3}
+  _distanceBetweenAfterImages: 0.05
   _dashVelocity: 35
   _dashingDuration: 0.35
   _dashCoolDown: 3

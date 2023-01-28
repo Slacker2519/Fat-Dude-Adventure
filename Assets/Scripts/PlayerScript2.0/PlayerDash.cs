@@ -17,4 +17,13 @@ public class PlayerDash : MonoBehaviour
         _playerController.Rb.gravityScale = 0f;
         _playerController.Rb.velocity = new Vector2(_playerController.transform.localScale.x * dashVelocity, 0f);
     }
+
+    public IEnumerator SpawnAfterImage(GameObject playerAfterImagePrefabs, float afterImageSpawnDelay)
+    {
+        while (true)
+        {
+            Instantiate(playerAfterImagePrefabs, _playerController.transform.position, Quaternion.identity).transform.localScale = _playerController.transform.localScale;
+            yield return new WaitForSeconds(afterImageSpawnDelay);
+        }
+    }
 }

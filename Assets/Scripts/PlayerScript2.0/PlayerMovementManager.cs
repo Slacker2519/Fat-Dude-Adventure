@@ -45,6 +45,8 @@ public class PlayerMovementManager : MonoBehaviour
     bool _wallJump => (_wallOnLeft || _wallOnRight) && !_grounded && _isJumpPress;
 
     [Header("PlayerDash")]
+    [SerializeField] GameObject _playerAfterImagePrefabs;
+    [SerializeField] float _distanceBetweenAfterImages;
     [SerializeField] float _dashVelocity;
     [SerializeField] float _dashingDuration;
     [SerializeField] float _dashCoolDown;
@@ -147,7 +149,9 @@ public class PlayerMovementManager : MonoBehaviour
         _isDashing = true;
         float _originalGravity = _rb.gravityScale;
         _playerDash.Dash(_dashVelocity);
+        Coroutine c = StartCoroutine(_playerDash.SpawnAfterImage(_playerAfterImagePrefabs, _distanceBetweenAfterImages));
         yield return new WaitForSeconds(_dashingDuration);
+        StopCoroutine(c);
         _rb.velocity = Vector2.zero;
         _rb.gravityScale = _originalGravity;
         _isDashing = false;
