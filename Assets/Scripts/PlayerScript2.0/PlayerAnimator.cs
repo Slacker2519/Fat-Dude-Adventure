@@ -11,12 +11,14 @@ public class PlayerAnimator : MonoBehaviour
     static readonly int WallSlide = Animator.StringToHash("WallSlide");
     static readonly int WallJump = Animator.StringToHash("WallJump");
     static readonly int Dash = Animator.StringToHash("Dash");
+    static readonly int GroundSlam = Animator.StringToHash("GroundSlam");
 
     Animator _anim;
     PlayerMovementManager _playerController;
     Rigidbody2D _rb;
     [SerializeField] float _wallJumpAnimDuration;
     [SerializeField] float _dashAnimDuration;
+    [SerializeField] float _groundSlamAnimDuration;
     float _lockedTill;
     int _currentState;
     bool _onAir;
@@ -44,6 +46,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (Time.time < _lockedTill) return _currentState;
 
+        if (_playerController.GroundSlamming) return LockState(GroundSlam, _groundSlamAnimDuration);
         if (_playerController.IsDashing) return LockState(Dash, _dashAnimDuration);
         if (_playerController.WallJump) return LockState(WallJump, _wallJumpAnimDuration);
         if (_playerController.WallSliding) return WallSlide;

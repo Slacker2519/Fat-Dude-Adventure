@@ -1074,6 +1074,7 @@ GameObject:
   - component: {fileID: 2073218565}
   - component: {fileID: 2073218566}
   - component: {fileID: 2073218567}
+  - component: {fileID: 2073218568}
   - component: {fileID: 2073218559}
   m_Layer: 0
   m_Name: Player
@@ -1183,8 +1184,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.6139537}
-  m_Size: {x: 0.4319328, y: 1.2350185}
+  m_Offset: {x: -0.003583327, y: 0.6306821}
+  m_Size: {x: 0.45074388, y: 1.2313192}
   m_Direction: 0
 --- !u!114 &2073218558
 MonoBehaviour:
@@ -1215,16 +1216,18 @@ MonoBehaviour:
   _jumpForce: 20
   _jumpGravity: 1.3
   _fallMultiPlier: 35
-  _maxGravity: 100
+  _maxGravity: 50
   _airJumpNumber: 1
   _wallSlideGravity: 0.7
   _wallJumpAngle: 40
   _wallJumpForce: 20
   _playerAfterImagePrefabs: {fileID: 7600795638336627722, guid: e8c8b57eb49f2004db14aaf544173dd7, type: 3}
-  _distanceBetweenAfterImages: 0.05
+  _distanceBetweenAfterImages: 0.03
   _dashVelocity: 35
   _dashingDuration: 0.35
-  _dashCoolDown: 3
+  _dashCoolDown: 2
+  _groundSlamGravity: 100
+  _groundSlamCoolDown: 1
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -1298,6 +1301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _wallJumpAnimDuration: 0.5
   _dashAnimDuration: 0.2
+  _groundSlamAnimDuration: 0.6
 --- !u!114 &2073218564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1344,5 +1348,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 411db43498ef5574dbdb88bf6b1b126f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2073218568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073218553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8770b1668d41bb24f9e06e3fc9241d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

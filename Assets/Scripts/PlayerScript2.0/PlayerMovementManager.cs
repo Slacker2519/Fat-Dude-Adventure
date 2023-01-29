@@ -12,6 +12,7 @@ public class PlayerMovementManager : MonoBehaviour
     PlayerWallSlide _playerWallSlide;
     PlayerWallJump _playerWallJump;
     PlayerDash _playerDash;
+    PlayerGroundSlam _playerGroundSlam;
 
     [Header("MovePlayerValues")]
     [SerializeField] float _playerAcceleration = 75f;
@@ -53,6 +54,12 @@ public class PlayerMovementManager : MonoBehaviour
     bool _canDash = true;
     bool _isDashing = false;
 
+    [Header("PlayerSlamGround")]
+    [SerializeField] float _groundSlamGravity;
+    [SerializeField] float _groundSlamCoolDown;
+    bool _canGroundSlam = true;
+    bool _groundSlamming;
+
     [Header("GroundCheckValues")]
     [SerializeField] LayerMask _groundLayer;
     [SerializeField] float _groundRaycastOffset;
@@ -87,6 +94,7 @@ public class PlayerMovementManager : MonoBehaviour
     public bool WallSliding { get { return _wallSliding; } }
     public bool WallJump { get { return _wallJump; } }
     public bool IsDashing { get { return _isDashing; } }
+    public bool GroundSlamming { get { return _groundSlamming; } }
 
     // Start is called before the first frame update
     void Start()
@@ -99,6 +107,7 @@ public class PlayerMovementManager : MonoBehaviour
         _playerWallSlide = GetComponent<PlayerWallSlide>();
         _playerWallJump = GetComponent <PlayerWallJump>();
         _playerDash = GetComponent<PlayerDash>();
+        _playerGroundSlam = GetComponent<PlayerGroundSlam>();
         _playerCurrentAcceleration = _playerAcceleration;
         _airHangTimeCounter = _airHangTime;
         _airJumpValue = _airJumpNumber;
@@ -107,22 +116,22 @@ public class PlayerMovementManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_isDashing) return;
-
         FlipPlayer();
         CoyoteTime();
+
+        if (_isDashing) return;
         MoveFunctionCall();
     }
 
     void FixedUpdate()
     {
-        if (_isDashing) return;
-
         PhysicsOnGround(_groundedGravity, _groundedDrag);
         PhysicsOnAir(_airDrag);
         PhysicsOnWall();
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
+
+        if (_isDashing) return;
         _playerRun.MovePlayer(_playerCurrentAcceleration, _maxMoveSpeed, ref _horizontalDirection);
     }
 
@@ -137,9 +146,20 @@ public class PlayerMovementManager : MonoBehaviour
         if ((_wallOnLeft || _wallOnRight) && !_grounded) _playerWallSlide.WallSlide(_wallSlideGravity);
         if (_wallOnLeft && !_grounded && _isJumpPress) _playerWallJump.JumpToTheRight(_wallJumpAngle, _wallJumpForce);
         if (_wallOnRight && !_grounded && _isJumpPress) _playerWallJump.JumpToTheLeft(_wallJumpAngle, _wallJumpForce);
-        if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash)
+        if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash) StartCoroutine(DashCoolDown());
+        if (Input.GetKeyDown(KeyCode.LeftControl) && _canGroundSlam) StartCoroutine(GroundSlamCoolDown());
+    }
+
+    IEnumerator GroundSlamCoolDown()
+    {
+        _canGroundSlam = false;
+        _groundSlamming = true;
+        _playerGroundSlam.SlamGround(_groundSlamGravity);
+        if (_grounded)
         {
-            StartCoroutine(DashCoolDown());
+            _groundSlamming = false;
+            yield return new WaitForSeconds(_dashCoolDown);
+            _canGroundSlam = true;
         }
     }
 
@@ -179,6 +199,8 @@ public class PlayerMovementManager : MonoBehaviour
     {
         if (_grounded) 
         {
+            _canGroundSlam = true;
+            _groundSlamming= false;
             _canJump = true;
             _airJumpValue = _airJumpNumber;
             _rb.gravityScale = groundedGravity;
