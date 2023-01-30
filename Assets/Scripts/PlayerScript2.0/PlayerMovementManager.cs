@@ -121,6 +121,7 @@ public class PlayerMovementManager : MonoBehaviour
         FlipPlayer();
         CoyoteTime();
 
+        if (_groundSlamming) return;
         if (_isDashing) return;
         MoveFunctionCall();
     }
@@ -133,6 +134,7 @@ public class PlayerMovementManager : MonoBehaviour
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
 
+        if (_groundSlamming) return;
         if (_isDashing) return;
         _playerRun.MovePlayer(_playerCurrentAcceleration, _maxMoveSpeed, ref _horizontalDirection);
     }
@@ -142,16 +144,16 @@ public class PlayerMovementManager : MonoBehaviour
         _canJump = _airHangTimeCounter > 0f || _grounded || _wallOnLeft || _wallOnRight ? true : false;
         _falling = _rb.velocity.y < 0f && !_groundSlamming && !_wallSliding && !_grounded ? true : false;
         _jumping = _rb.velocity.y >= 0 && !_grounded ? true : false;
-
         if (_jumping) _rb.gravityScale = _jumpGravity;
+
+        if (Input.GetKeyDown(KeyCode.LeftControl) && _canGroundSlam) StartCoroutine(GroundSlamCoolDown());
+        if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash) StartCoroutine(DashCoolDown());
         if (_canJump && _isJumpPress) _playerJump.JumpPlayer(_jumpForce);
         if (_falling) _playerFall.FallingPlayer(_fallMultiPlier, _maxGravity);
         if (!_canJump && !_grounded && _isJumpPress && _airJumpValue > 0f) _playerAirJump.AirJumping(ref _airJumpValue, _jumpForce);
         if ((_wallOnLeft || _wallOnRight) && !_grounded) _playerWallSlide.WallSlide(_wallSlideGravity);
         if (_wallOnLeft && !_grounded && _isJumpPress) _playerWallJump.JumpToTheRight(_wallJumpAngle, _wallJumpForce);
         if (_wallOnRight && !_grounded && _isJumpPress) _playerWallJump.JumpToTheLeft(_wallJumpAngle, _wallJumpForce);
-        if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash) StartCoroutine(DashCoolDown());
-        if (Input.GetKeyDown(KeyCode.LeftControl) && _canGroundSlam) StartCoroutine(GroundSlamCoolDown());
     }
 
     IEnumerator GroundSlamCoolDown()
@@ -159,11 +161,11 @@ public class PlayerMovementManager : MonoBehaviour
         _falling = false;
         _canGroundSlam = false;
         _groundSlamming = true;
-        _playerGroundSlam.SlamGround(_groundSlamGravity);
+        if (_groundSlamming) _playerGroundSlam.SlamGround(_groundSlamGravity);
         if (_grounded)
         {
             _groundSlamming = false;
-            yield return new WaitForSeconds(_dashCoolDown);
+            yield return new WaitForSeconds(_groundSlamCoolDown);
             _canGroundSlam = true;
         }
     }
@@ -205,7 +207,7 @@ public class PlayerMovementManager : MonoBehaviour
         if (_grounded) 
         {
             _canGroundSlam = true;
-            _groundSlamming= false;
+            _groundSlamming = false;
             _canJump = true;
             _airJumpValue = _airJumpNumber;
             _rb.gravityScale = groundedGravity;
@@ -215,8 +217,9 @@ public class PlayerMovementManager : MonoBehaviour
 
     void PhysicsOnAir(float airDrag)
     {
-        if (!_grounded)
+        if (!_grounded && !_wallSliding)
         {
+            _canGroundSlam = true;
             _canJump = false;
             _rb.drag = airDrag;
         }
@@ -226,6 +229,7 @@ public class PlayerMovementManager : MonoBehaviour
     {
         if (_wallSliding)
         {
+            _canGroundSlam = false;
             _canJump = true;
             _airJumpValue = _airJumpNumber;
             _playerCurrentAcceleration = _onWallHorizontalVelocity;

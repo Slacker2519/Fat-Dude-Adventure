@@ -1213,9 +1213,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerAcceleration: 75
   _maxMoveSpeed: 9
-  _jumpForce: 20
+  _jumpForce: 21
   _jumpGravity: 1.3
-  _fallMultiPlier: 35
+  _fallMultiPlier: 60
   _maxGravity: 50
   _airJumpNumber: 1
   _wallSlideGravity: 0.7
@@ -1226,7 +1226,7 @@ MonoBehaviour:
   _dashVelocity: 35
   _dashingDuration: 0.35
   _dashCoolDown: 2
-  _groundSlamGravity: 100
+  _groundSlamGravity: 80
   _groundSlamCoolDown: 1
   _groundLayer:
     serializedVersion: 2
@@ -1236,7 +1236,7 @@ MonoBehaviour:
   _wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  _wallRaycastLength: 0.4
+  _wallRaycastLength: 0.3
   _wallRaycastOffset: 0.6
   _groundedGravity: 1
   _groundedDrag: 7
