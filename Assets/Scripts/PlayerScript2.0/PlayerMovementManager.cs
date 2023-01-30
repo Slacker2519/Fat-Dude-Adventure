@@ -19,18 +19,18 @@ public class PlayerMovementManager : MonoBehaviour
     float _playerCurrentAcceleration;
     [SerializeField] float _maxMoveSpeed;
     float _horizontalDirection;
-    //bool changingDirection => (_rb.velocity.x > 0f && _playerRun.HorizontalDirection < 0f) || (_rb.velocity.x < 0f && _playerRun.HorizontalDirection > 0f);
 
     [Header("PlayerJumpValues")]
     [SerializeField] float _jumpForce;
     [SerializeField] float _jumpGravity;
     bool _isJumpPress => Input.GetKeyDown(KeyCode.Space);
     bool _canJump;
-    bool _jumping => _rb.velocity.y >=0 && !_grounded;
+    bool _jumping;
 
     [Header("PlayerFallValues")]
     [SerializeField] float _fallMultiPlier;
     [SerializeField] float _maxGravity;
+    bool _falling;
 
     [Header("PlayerAirJumpValue")]
     [SerializeField] int _airJumpNumber;
@@ -95,6 +95,8 @@ public class PlayerMovementManager : MonoBehaviour
     public bool WallJump { get { return _wallJump; } }
     public bool IsDashing { get { return _isDashing; } }
     public bool GroundSlamming { get { return _groundSlamming; } }
+    public bool Falling { get { return _falling; } }
+    public bool Jumping { get { return _jumping; } }
 
     // Start is called before the first frame update
     void Start()
@@ -138,10 +140,12 @@ public class PlayerMovementManager : MonoBehaviour
     void MoveFunctionCall()
     {
         _canJump = _airHangTimeCounter > 0f || _grounded || _wallOnLeft || _wallOnRight ? true : false;
+        _falling = _rb.velocity.y < 0f && !_groundSlamming && !_wallSliding && !_grounded ? true : false;
+        _jumping = _rb.velocity.y >= 0 && !_grounded ? true : false;
 
         if (_jumping) _rb.gravityScale = _jumpGravity;
         if (_canJump && _isJumpPress) _playerJump.JumpPlayer(_jumpForce);
-        if (_rb.velocity.y <= 0f) _playerFall.FallingPlayer(_fallMultiPlier, _maxGravity);
+        if (_falling) _playerFall.FallingPlayer(_fallMultiPlier, _maxGravity);
         if (!_canJump && !_grounded && _isJumpPress && _airJumpValue > 0f) _playerAirJump.AirJumping(ref _airJumpValue, _jumpForce);
         if ((_wallOnLeft || _wallOnRight) && !_grounded) _playerWallSlide.WallSlide(_wallSlideGravity);
         if (_wallOnLeft && !_grounded && _isJumpPress) _playerWallJump.JumpToTheRight(_wallJumpAngle, _wallJumpForce);
@@ -152,6 +156,7 @@ public class PlayerMovementManager : MonoBehaviour
 
     IEnumerator GroundSlamCoolDown()
     {
+        _falling = false;
         _canGroundSlam = false;
         _groundSlamming = true;
         _playerGroundSlam.SlamGround(_groundSlamGravity);

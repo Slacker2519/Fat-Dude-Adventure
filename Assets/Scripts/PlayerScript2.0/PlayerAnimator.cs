@@ -7,7 +7,8 @@ public class PlayerAnimator : MonoBehaviour
     static readonly int Idle = Animator.StringToHash("Idle");
     static readonly int Run = Animator.StringToHash("Run");
     static readonly int IdleTransition = Animator.StringToHash("IdleTransition");
-    static readonly int Jump = Animator.StringToHash("JumpFall");
+    static readonly int Jump = Animator.StringToHash("Jump");
+    static readonly int Fall = Animator.StringToHash("JumpFall");
     static readonly int WallSlide = Animator.StringToHash("WallSlide");
     static readonly int WallJump = Animator.StringToHash("WallJump");
     static readonly int Dash = Animator.StringToHash("Dash");
@@ -50,10 +51,11 @@ public class PlayerAnimator : MonoBehaviour
         if (_playerController.IsDashing) return LockState(Dash, _dashAnimDuration);
         if (_playerController.WallJump) return LockState(WallJump, _wallJumpAnimDuration);
         if (_playerController.WallSliding) return WallSlide;
-        if (_onAir) return Jump;
+        if (_playerController.Jumping) return Jump;
+        if (_playerController.Falling) return Fall;
         if (_playerController.HorizontalDirection == 0f && _playerController.Rb.velocity.x != 0 && _playerController.Grounded) return IdleTransition;
-        if (_playerController.Rb.velocity.y == 0f) return _playerController.HorizontalDirection == 0f ? Idle : Run;
-        return _playerController.Rb.velocity.y != 0 && !_playerController.Grounded ? Jump : Idle;
+        if (_playerController.Rb.velocity.y == 0f && _playerController.Grounded) return _playerController.HorizontalDirection == 0f ? Idle : Run;
+        return 0;
 
         int LockState(int s, float t)
         {
