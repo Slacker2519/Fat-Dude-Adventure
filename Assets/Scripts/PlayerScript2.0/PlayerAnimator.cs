@@ -13,16 +13,16 @@ public class PlayerAnimator : MonoBehaviour
     static readonly int WallJump = Animator.StringToHash("WallJump");
     static readonly int Dash = Animator.StringToHash("Dash");
     static readonly int GroundSlam = Animator.StringToHash("GroundSlam");
+    static readonly int GroundSlamImpact = Animator.StringToHash("GroundSlamImpact");
 
     Animator _anim;
     PlayerMovementManager _playerController;
     Rigidbody2D _rb;
     [SerializeField] float _wallJumpAnimDuration;
     [SerializeField] float _dashAnimDuration;
-    [SerializeField] float _groundSlamAnimDuration;
+    [SerializeField] float _groundImpactAnimDuration;
     float _lockedTill;
     int _currentState;
-    bool _onAir;
 
     // Start is called before the first frame update
     void Start()
@@ -35,8 +35,6 @@ public class PlayerAnimator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _onAir = _rb.velocity.y != 0 && !_playerController.Grounded ? true : false;
-
         int state = GetState();
         if (state == _currentState) return;
         _anim.CrossFade(state, 0, 0);
@@ -47,7 +45,8 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (Time.time < _lockedTill) return _currentState;
 
-        if (_playerController.GroundSlamming) return LockState(GroundSlam, _groundSlamAnimDuration);
+        if (_playerController.GroundSlamming && _playerController.GroundImpact) return LockState(GroundSlamImpact, _groundImpactAnimDuration);
+        if (_playerController.GroundSlamming) return GroundSlam;
         if (_playerController.IsDashing) return LockState(Dash, _dashAnimDuration);
         if (_playerController.WallJump) return LockState(WallJump, _wallJumpAnimDuration);
         if (_playerController.WallSliding) return WallSlide;

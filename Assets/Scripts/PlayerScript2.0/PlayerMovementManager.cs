@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMovementManager : MonoBehaviour
 {
+    #region Variables
     Rigidbody2D _rb;
     PlayerRun _playerRun;
     PlayerFall _playerFall;
@@ -57,8 +58,10 @@ public class PlayerMovementManager : MonoBehaviour
     [Header("PlayerSlamGround")]
     [SerializeField] float _groundSlamGravity;
     [SerializeField] float _groundSlamCoolDown;
+    [SerializeField] float _groundImpactRaycastLength;
     bool _canGroundSlam = true;
     bool _groundSlamming;
+    bool _groundImpact;
 
     [Header("GroundCheckValues")]
     [SerializeField] LayerMask _groundLayer;
@@ -86,7 +89,9 @@ public class PlayerMovementManager : MonoBehaviour
     [Header("HangTimeOnAir")]
     [SerializeField] float _airHangTime;
     float _airHangTimeCounter;
+    #endregion
 
+    #region Getter and Setter
     public Rigidbody2D Rb { get { return _rb; } }
     public float GroundedGravity { get { return _groundedGravity; } }
     public float HorizontalDirection { get { return _horizontalDirection; } }
@@ -97,6 +102,8 @@ public class PlayerMovementManager : MonoBehaviour
     public bool GroundSlamming { get { return _groundSlamming; } }
     public bool Falling { get { return _falling; } }
     public bool Jumping { get { return _jumping; } }
+    public bool GroundImpact { get { return _groundImpact; } }
+    #endregion
 
     // Start is called before the first frame update
     void Start()
@@ -133,6 +140,7 @@ public class PlayerMovementManager : MonoBehaviour
         PhysicsOnWall();
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
+        GroundImpactCheck(_groundImpactRaycastLength, _groundLayer);
 
         if (_groundSlamming) return;
         if (_isDashing) return;
@@ -265,6 +273,11 @@ public class PlayerMovementManager : MonoBehaviour
         _wallOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + wallRaycastOffset), Vector2.right, wallRaycastLength, wallLayer);
     }
 
+    void GroundImpactCheck(float groundImpactRaycastLength, LayerMask groundLayer)
+    {
+        _groundImpact = Physics2D.Raycast(transform.position, Vector2.down, groundImpactRaycastLength, groundLayer);
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -279,5 +292,7 @@ public class PlayerMovementManager : MonoBehaviour
         // wall raycast
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.left * _wallRaycastLength);
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.right * _wallRaycastLength);
+
+        Gizmos.DrawLine(transform.position, transform.position + Vector3.down * _groundImpactRaycastLength);
     }
 }
