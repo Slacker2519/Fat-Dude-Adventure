@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PlayerJump : MonoBehaviour
 {
-    PlayerMovementManager _playerController;
+    PlayerController2_0 _playerController;
 
     // Start is called before the first frame update
     void Start()
     {
-        _playerController = GetComponent<PlayerMovementManager>();
+        _playerController = GetComponent<PlayerController2_0>();
     }
 
     public void JumpPlayer(float jumpForce)

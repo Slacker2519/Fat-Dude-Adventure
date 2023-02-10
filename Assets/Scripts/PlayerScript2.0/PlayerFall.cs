@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class PlayerFall : MonoBehaviour
 {
-    PlayerMovementManager _playerController;
+    PlayerController2_0 _playerController;
 
     void Start()
     {
-        _playerController = GetComponent<PlayerMovementManager>();
+        _playerController = GetComponent<PlayerController2_0>();
     }
 
     public void FallingPlayer(float fallMultiplier ,float maxGravity)

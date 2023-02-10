@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerRun : MonoBehaviour
 {
-    PlayerMovementManager _playerController;
+    PlayerController2_0 _playerController;
 
     private void Start()
     {
-        _playerController = GetComponent<PlayerMovementManager>();
+        _playerController = GetComponent<PlayerController2_0>();
     }
 
     public void MovePlayer(float playerAcceleration, float maxMoveSpeed, ref float horizontalDirection)

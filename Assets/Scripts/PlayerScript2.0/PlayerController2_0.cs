@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovementManager : MonoBehaviour
+public class PlayerController2_0 : MonoBehaviour
 {
     Rigidbody2D _rb;
     PlayerRun _playerRun;
@@ -12,7 +12,6 @@ public class PlayerMovementManager : MonoBehaviour
     PlayerWallSlide _playerWallSlide;
     PlayerWallJump _playerWallJump;
     PlayerDash _playerDash;
-    PlayerGroundSlam _playerGroundSlam;
 
     [Header("MovePlayerValues")]
     [SerializeField] float _playerAcceleration = 75f;
@@ -37,8 +36,8 @@ public class PlayerMovementManager : MonoBehaviour
     int _airJumpValue;
 
     [Header("PlayerWallSlideValues")]
-    [SerializeField] float _wallSlideGravity;
-    bool _wallSliding => (_wallOnLeft || _wallOnRight) && !_grounded;
+    [SerializeField] float _wallSlideVelocity;
+    bool _wallSliding;
 
     [Header("PlayerWallJump")]
     [SerializeField] float _wallJumpAngle;
@@ -53,12 +52,6 @@ public class PlayerMovementManager : MonoBehaviour
     [SerializeField] float _dashCoolDown;
     bool _canDash = true;
     bool _isDashing = false;
-
-    [Header("PlayerSlamGround")]
-    [SerializeField] float _groundSlamGravity;
-    [SerializeField] float _groundSlamCoolDown;
-    bool _canGroundSlam = true;
-    bool _groundSlamming;
 
     [Header("GroundCheckValues")]
     [SerializeField] LayerMask _groundLayer;
@@ -80,9 +73,6 @@ public class PlayerMovementManager : MonoBehaviour
     [Header("OnAirValues")]
     [SerializeField] float _airDrag;
 
-    [Header("OnWallValues")]
-    [SerializeField] float _onWallHorizontalVelocity;
-
     [Header("HangTimeOnAir")]
     [SerializeField] float _airHangTime;
     float _airHangTimeCounter;
@@ -94,7 +84,6 @@ public class PlayerMovementManager : MonoBehaviour
     public bool WallSliding { get { return _wallSliding; } }
     public bool WallJump { get { return _wallJump; } }
     public bool IsDashing { get { return _isDashing; } }
-    public bool GroundSlamming { get { return _groundSlamming; } }
     public bool Falling { get { return _falling; } }
     public bool Jumping { get { return _jumping; } }
 
@@ -109,7 +98,6 @@ public class PlayerMovementManager : MonoBehaviour
         _playerWallSlide = GetComponent<PlayerWallSlide>();
         _playerWallJump = GetComponent <PlayerWallJump>();
         _playerDash = GetComponent<PlayerDash>();
-        _playerGroundSlam = GetComponent<PlayerGroundSlam>();
         _playerCurrentAcceleration = _playerAcceleration;
         _airHangTimeCounter = _airHangTime;
         _airJumpValue = _airJumpNumber;
@@ -118,12 +106,12 @@ public class PlayerMovementManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         FlipPlayer();
         CoyoteTime();
 
-        if (_groundSlamming) return;
         if (_isDashing) return;
-        MoveFunctionCall();
+        MovementLogic();
     }
 
     void FixedUpdate()
@@ -134,39 +122,34 @@ public class PlayerMovementManager : MonoBehaviour
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
 
-        if (_groundSlamming) return;
         if (_isDashing) return;
         _playerRun.MovePlayer(_playerCurrentAcceleration, _maxMoveSpeed, ref _horizontalDirection);
     }
 
-    void MoveFunctionCall()
+    void MovementLogic()
     {
         _canJump = _airHangTimeCounter > 0f || _grounded || _wallOnLeft || _wallOnRight ? true : false;
-        _falling = _rb.velocity.y < 0f && !_groundSlamming && !_wallSliding && !_grounded ? true : false;
+        _falling = _rb.velocity.y < 0f && !_wallSliding && !_grounded ? true : false;
         _jumping = _rb.velocity.y >= 0 && !_grounded ? true : false;
         if (_jumping) _rb.gravityScale = _jumpGravity;
 
-        if (Input.GetKeyDown(KeyCode.LeftControl) && _canGroundSlam) StartCoroutine(GroundSlamCoolDown());
         if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash) StartCoroutine(DashCoolDown());
         if (_canJump && _isJumpPress) _playerJump.JumpPlayer(_jumpForce);
         if (_falling) _playerFall.FallingPlayer(_fallMultiPlier, _maxGravity);
         if (!_canJump && !_grounded && _isJumpPress && _airJumpValue > 0f) _playerAirJump.AirJumping(ref _airJumpValue, _jumpForce);
-        if ((_wallOnLeft || _wallOnRight) && !_grounded) _playerWallSlide.WallSlide(_wallSlideGravity);
         if (_wallOnLeft && !_grounded && _isJumpPress) _playerWallJump.JumpToTheRight(_wallJumpAngle, _wallJumpForce);
         if (_wallOnRight && !_grounded && _isJumpPress) _playerWallJump.JumpToTheLeft(_wallJumpAngle, _wallJumpForce);
+
+        WallSlideLogic();
     }
 
-    IEnumerator GroundSlamCoolDown()
+    void WallSlideLogic()
     {
-        _falling = false;
-        _canGroundSlam = false;
-        _groundSlamming = true;
-        if (_groundSlamming) _playerGroundSlam.SlamGround(_groundSlamGravity);
-        if (_grounded)
+        _horizontalDirection = Input.GetAxisRaw("Horizontal");
+        _wallSliding = (_wallOnLeft || _wallOnRight) && !_grounded && _horizontalDirection != 0f ? true : false;
+        if (_wallSliding)
         {
-            _groundSlamming = false;
-            yield return new WaitForSeconds(_groundSlamCoolDown);
-            _canGroundSlam = true;
+            _playerWallSlide.WallSlide(_wallSlideVelocity);
         }
     }
 
@@ -206,8 +189,6 @@ public class PlayerMovementManager : MonoBehaviour
     {
         if (_grounded) 
         {
-            _canGroundSlam = true;
-            _groundSlamming = false;
             _canJump = true;
             _airJumpValue = _airJumpNumber;
             _rb.gravityScale = groundedGravity;
@@ -219,7 +200,6 @@ public class PlayerMovementManager : MonoBehaviour
     {
         if (!_grounded && !_wallSliding)
         {
-            _canGroundSlam = true;
             _canJump = false;
             _rb.drag = airDrag;
         }
@@ -229,10 +209,8 @@ public class PlayerMovementManager : MonoBehaviour
     {
         if (_wallSliding)
         {
-            _canGroundSlam = false;
             _canJump = true;
             _airJumpValue = _airJumpNumber;
-            _playerCurrentAcceleration = _onWallHorizontalVelocity;
         }
 
         if (!_wallSliding) _playerCurrentAcceleration = _playerAcceleration;
@@ -249,8 +227,8 @@ public class PlayerMovementManager : MonoBehaviour
             transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
-        if (_wallOnLeft) transform.localScale = new Vector3(-1f, 1f, 1f);
-        if (_wallOnRight) transform.localScale = new Vector3(1f, 1f, 1f);
+        if (_wallJump && _wallOnRight) transform.localScale = new Vector3(-1f, 1f, 1f);
+        if (_wallJump && _wallOnLeft) transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
     void GroundCheck(float groundRaycastOffset, float groundRaycastLength, LayerMask groundLayer)
