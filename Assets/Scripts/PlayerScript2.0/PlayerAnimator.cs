@@ -10,22 +10,20 @@ public class PlayerAnimator : MonoBehaviour
     static readonly int Jump = Animator.StringToHash("Jump");
     static readonly int Fall = Animator.StringToHash("JumpFall");
     static readonly int WallSlide = Animator.StringToHash("WallSlide");
-    static readonly int WallJump = Animator.StringToHash("WallJump");
+    static readonly int AirJump = Animator.StringToHash("WallJump");
     static readonly int Dash = Animator.StringToHash("Dash");
+    static readonly int Attack = Animator.StringToHash("Attack01");
     
     Animator _anim;
     PlayerController2_0 _playerController;
-    Rigidbody2D _rb;
-    [SerializeField] float _wallJumpAnimDuration;
     [SerializeField] float _dashAnimDuration;
+    [SerializeField] float _attackAnimDuration;
     float _lockedTill;
     int _currentState;
-    bool _onAir;
 
     // Start is called before the first frame update
     void Start()
     {
-        _rb = GetComponent<Rigidbody2D>();
         _playerController = GetComponent<PlayerController2_0>();
         _anim = GetComponent<Animator>();
     }
@@ -33,8 +31,6 @@ public class PlayerAnimator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _onAir = _rb.velocity.y != 0 && !_playerController.Grounded ? true : false;
-
         int state = GetState();
         if (state == _currentState) return;
         _anim.CrossFade(state, 0, 0);
@@ -45,8 +41,10 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (Time.time < _lockedTill) return _currentState;
 
+        if (Input.GetMouseButtonDown(0)) return LockState(Attack, _attackAnimDuration);
+        if (_playerController.AirJumping) return AirJump;
         if (_playerController.IsDashing) return LockState(Dash, _dashAnimDuration);
-        if (_playerController.WallJump) return LockState(WallJump, _wallJumpAnimDuration);
+        if (_playerController.WallJump) return Jump;
         if (_playerController.WallSliding) return WallSlide;
         if (_playerController.Jumping) return Jump;
         if (_playerController.Falling) return Fall;

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController2_0 : MonoBehaviour
 {
+    #region Variables
     Rigidbody2D _rb;
     PlayerRun _playerRun;
     PlayerFall _playerFall;
@@ -34,6 +35,7 @@ public class PlayerController2_0 : MonoBehaviour
     [Header("PlayerAirJumpValue")]
     [SerializeField] int _airJumpNumber;
     int _airJumpValue;
+    bool _airJumping;
 
     [Header("PlayerWallSlideValues")]
     [SerializeField] float _wallSlideVelocity;
@@ -52,6 +54,11 @@ public class PlayerController2_0 : MonoBehaviour
     [SerializeField] float _dashCoolDown;
     bool _canDash = true;
     bool _isDashing = false;
+
+    [Header("PlayerAttack")]
+    [SerializeField] float _attackDamage;
+    [SerializeField] float _playerAttackDuration;
+    bool _playerAttacking;
 
     [Header("GroundCheckValues")]
     [SerializeField] LayerMask _groundLayer;
@@ -76,7 +83,9 @@ public class PlayerController2_0 : MonoBehaviour
     [Header("HangTimeOnAir")]
     [SerializeField] float _airHangTime;
     float _airHangTimeCounter;
+    #endregion
 
+    #region Getters & Setters
     public Rigidbody2D Rb { get { return _rb; } }
     public float GroundedGravity { get { return _groundedGravity; } }
     public float HorizontalDirection { get { return _horizontalDirection; } }
@@ -86,6 +95,8 @@ public class PlayerController2_0 : MonoBehaviour
     public bool IsDashing { get { return _isDashing; } }
     public bool Falling { get { return _falling; } }
     public bool Jumping { get { return _jumping; } }
+    public bool AirJumping { get { return _airJumping; } }
+    #endregion
 
     // Start is called before the first frame update
     void Start()
@@ -122,6 +133,7 @@ public class PlayerController2_0 : MonoBehaviour
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
 
+        if (_playerAttacking) return;
         if (_isDashing) return;
         _playerRun.MovePlayer(_playerCurrentAcceleration, _maxMoveSpeed, ref _horizontalDirection);
     }
@@ -131,6 +143,7 @@ public class PlayerController2_0 : MonoBehaviour
         _canJump = _airHangTimeCounter > 0f || _grounded || _wallOnLeft || _wallOnRight ? true : false;
         _falling = _rb.velocity.y < 0f && !_wallSliding && !_grounded ? true : false;
         _jumping = _rb.velocity.y >= 0 && !_grounded ? true : false;
+        _airJumping = _rb.velocity.y >= 0 && !_canJump && !_grounded && _airJumpValue == 0f ? true : false;
         if (_jumping) _rb.gravityScale = _jumpGravity;
 
         if (Input.GetKeyDown(KeyCode.Mouse1) && _canDash) StartCoroutine(DashCoolDown());
@@ -139,8 +152,18 @@ public class PlayerController2_0 : MonoBehaviour
         if (!_canJump && !_grounded && _isJumpPress && _airJumpValue > 0f) _playerAirJump.AirJumping(ref _airJumpValue, _jumpForce);
         if (_wallOnLeft && !_grounded && _isJumpPress) _playerWallJump.JumpToTheRight(_wallJumpAngle, _wallJumpForce);
         if (_wallOnRight && !_grounded && _isJumpPress) _playerWallJump.JumpToTheLeft(_wallJumpAngle, _wallJumpForce);
-
         WallSlideLogic();
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            _playerAttacking = true;
+            Invoke("Attacking", _playerAttackDuration);
+        }
+    }
+
+    void Attacking()
+    {
+        _playerAttacking = false;
     }
 
     void WallSlideLogic()
@@ -189,6 +212,7 @@ public class PlayerController2_0 : MonoBehaviour
     {
         if (_grounded) 
         {
+            _airJumping = false;
             _canJump = true;
             _airJumpValue = _airJumpNumber;
             _rb.gravityScale = groundedGravity;
