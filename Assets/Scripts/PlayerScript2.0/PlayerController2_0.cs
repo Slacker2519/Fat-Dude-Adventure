@@ -14,6 +14,14 @@ public class PlayerController2_0 : MonoBehaviour
     PlayerWallJump _playerWallJump;
     PlayerDash _playerDash;
 
+    [Header("PlayerTakeDamage")]
+    [SerializeField] int _playerHealth;
+    [SerializeField] float _timeToResetPlayerAfterTakeDamage;
+    [SerializeField] long _knockBackForce;
+    [SerializeField] float _knockBackAngle;
+    int _playerCurrentHealth;
+    bool _playerTakeDamage = false;
+
     [Header("MovePlayerValues")]
     [SerializeField] float _playerAcceleration = 75f;
     float _playerCurrentAcceleration;
@@ -73,6 +81,13 @@ public class PlayerController2_0 : MonoBehaviour
     bool _wallOnRight;
     bool _wallOnLeft;
 
+    [Header("EnemyDetectionValue")]
+    [SerializeField] LayerMask _enemyLayer;
+    [SerializeField] float _enemyRaycastLength;
+    [SerializeField] float _enemyRaycastOffset;
+    bool _enemyOnLeft;
+    bool _enemyOnRight;
+
     [Header("OnGroundValues")]
     [SerializeField] float _groundedGravity;
     [SerializeField] float _groundedDrag;
@@ -96,6 +111,7 @@ public class PlayerController2_0 : MonoBehaviour
     public bool Falling { get { return _falling; } }
     public bool Jumping { get { return _jumping; } }
     public bool AirJumping { get { return _airJumping; } }
+    public bool PlayerTakeDamage { get { return _playerTakeDamage; } }
     #endregion
 
     // Start is called before the first frame update
@@ -109,6 +125,7 @@ public class PlayerController2_0 : MonoBehaviour
         _playerWallSlide = GetComponent<PlayerWallSlide>();
         _playerWallJump = GetComponent <PlayerWallJump>();
         _playerDash = GetComponent<PlayerDash>();
+        _playerCurrentHealth = _playerHealth;
         _playerCurrentAcceleration = _playerAcceleration;
         _airHangTimeCounter = _airHangTime;
         _airJumpValue = _airJumpNumber;
@@ -132,7 +149,9 @@ public class PlayerController2_0 : MonoBehaviour
         PhysicsOnWall();
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
+        EnemyDetection(_enemyRaycastLength, _enemyRaycastOffset, _enemyLayer);
 
+        if (_playerTakeDamage) return;
         if (_playerAttacking) return;
         if (_isDashing) return;
         _playerRun.MovePlayer(_playerCurrentAcceleration, _maxMoveSpeed, ref _horizontalDirection);
@@ -267,6 +286,12 @@ public class PlayerController2_0 : MonoBehaviour
         _wallOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + wallRaycastOffset), Vector2.right, wallRaycastLength, wallLayer);
     }
 
+    void EnemyDetection(float enemyRaycastLength, float enemyRaycastOffset, LayerMask enemyLayer)
+    {
+        _enemyOnLeft = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + enemyRaycastOffset), Vector2.left, enemyRaycastLength, enemyLayer);
+        _enemyOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + enemyRaycastOffset), Vector2.right, enemyRaycastLength, enemyLayer);
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -281,5 +306,25 @@ public class PlayerController2_0 : MonoBehaviour
         // wall raycast
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.left * _wallRaycastLength);
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.right * _wallRaycastLength);
+
+        Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _enemyRaycastOffset), new Vector2(transform.position.x, transform.position.y + _enemyRaycastOffset) + Vector2.left * _enemyRaycastLength);
+        Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _enemyRaycastOffset), new Vector2(transform.position.x, transform.position.y + _enemyRaycastOffset) + Vector2.right * _enemyRaycastLength);
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag.Equals("Enemy"))
+        {
+            if (_enemyOnLeft) _playerWallJump.JumpToTheRight(_knockBackAngle, _knockBackForce);
+            if (_enemyOnRight) _playerWallJump.JumpToTheLeft(_knockBackAngle, _knockBackForce);
+            _playerTakeDamage = true;
+            _playerCurrentHealth--;
+            Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
+        }
+    }
+
+    void ResetPlayerAfterTakeDamage()
+    {
+        _playerTakeDamage = false;
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
@@ -13,11 +14,13 @@ public class PlayerAnimator : MonoBehaviour
     static readonly int AirJump = Animator.StringToHash("WallJump");
     static readonly int Dash = Animator.StringToHash("Dash");
     static readonly int Attack = Animator.StringToHash("Attack01");
+    static readonly int TakeDamage = Animator.StringToHash("Knockback");
     
     Animator _anim;
     PlayerController2_0 _playerController;
     [SerializeField] float _dashAnimDuration;
     [SerializeField] float _attackAnimDuration;
+    [SerializeField] float _takeDamageAnimDuration;
     float _lockedTill;
     int _currentState;
 
@@ -41,6 +44,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (Time.time < _lockedTill) return _currentState;
 
+        if (_playerController.PlayerTakeDamage) return LockState(TakeDamage, _takeDamageAnimDuration);
         if (Input.GetMouseButtonDown(0)) return LockState(Attack, _attackAnimDuration);
         if (_playerController.AirJumping) return AirJump;
         if (_playerController.IsDashing) return LockState(Dash, _dashAnimDuration);
@@ -49,7 +53,7 @@ public class PlayerAnimator : MonoBehaviour
         if (_playerController.Jumping) return Jump;
         if (_playerController.Falling) return Fall;
         if (_playerController.HorizontalDirection == 0f && _playerController.Rb.velocity.x != 0 && _playerController.Grounded) return IdleTransition;
-        if (_playerController.Rb.velocity.y == 0f && _playerController.Grounded) return _playerController.HorizontalDirection == 0f ? Idle : Run;
+        if (_playerController.Grounded) return _playerController.HorizontalDirection == 0f ? Idle : Run;
         return 0;
 
         int LockState(int s, float t)
