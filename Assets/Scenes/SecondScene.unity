@@ -397,7 +397,7 @@ GameObject:
   m_Component:
   - component: {fileID: 401010426}
   - component: {fileID: 401010427}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: PlayerCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1487,12 +1487,12 @@ GameObject:
   - component: {fileID: 1796518303}
   - component: {fileID: 1796518304}
   m_Layer: 7
-  m_Name: PlayerWeaponCollider
+  m_Name: PlayerTriggerCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1796518303
 Transform:
   m_ObjectHideFlags: 0
@@ -1656,7 +1656,6 @@ GameObject:
   - component: {fileID: 2073218566}
   - component: {fileID: 2073218567}
   - component: {fileID: 2073218559}
-  - component: {fileID: 2073218568}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -1779,9 +1778,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerHealth: 3
-  _timeToResetPlayerAfterTakeDamage: 0.4
+  _timeToResetPlayerAfterTakeDamage: 0.55
   _knockBackForce: 10
-  _knockBackAngle: 30
+  _knockBackAngle: 20
   _playerAcceleration: 75
   _maxMoveSpeed: 9
   _jumpForce: 21
@@ -1812,8 +1811,8 @@ MonoBehaviour:
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 256
-  _enemyRaycastLength: 1
-  _enemyRaycastOffset: 0.8
+  _enemyDetectorRadius: 0.8
+  _enemyCirclecastOffset: 0.63
   _groundedGravity: 1
   _groundedDrag: 7
   _airDrag: 6
@@ -1925,29 +1924,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 411db43498ef5574dbdb88bf6b1b126f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!61 &2073218568
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2073218553}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 1.3125}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0}
-    oldSize: {x: 3, y: 2.625}
-    newSize: {x: 3, y: 2.625}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 3, y: 2.625}
-  m_EdgeRadius: 0

@@ -83,10 +83,9 @@ public class PlayerController2_0 : MonoBehaviour
 
     [Header("EnemyDetectionValue")]
     [SerializeField] LayerMask _enemyLayer;
-    [SerializeField] float _enemyRaycastLength;
-    [SerializeField] float _enemyRaycastOffset;
-    bool _enemyOnLeft;
-    bool _enemyOnRight;
+    [SerializeField] float _enemyDetectorRadius;
+    [SerializeField] float _enemyCirclecastOffset;
+    RaycastHit2D _enemyDetector;
 
     [Header("OnGroundValues")]
     [SerializeField] float _groundedGravity;
@@ -149,7 +148,7 @@ public class PlayerController2_0 : MonoBehaviour
         PhysicsOnWall();
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
-        EnemyDetection(_enemyRaycastLength, _enemyRaycastOffset, _enemyLayer);
+        EnemyDetection(_enemyDetectorRadius, _enemyCirclecastOffset, _enemyLayer);
 
         if (_playerTakeDamage) return;
         if (_playerAttacking) return;
@@ -286,10 +285,9 @@ public class PlayerController2_0 : MonoBehaviour
         _wallOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + wallRaycastOffset), Vector2.right, wallRaycastLength, wallLayer);
     }
 
-    void EnemyDetection(float enemyRaycastLength, float enemyRaycastOffset, LayerMask enemyLayer)
+    void EnemyDetection(float enemyDetectorRadius, float enemyCirclecastOffset, LayerMask enemyLayer)
     {
-        _enemyOnLeft = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + enemyRaycastOffset), Vector2.left, enemyRaycastLength, enemyLayer);
-        _enemyOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + enemyRaycastOffset), Vector2.right, enemyRaycastLength, enemyLayer);
+        _enemyDetector = Physics2D.CircleCast(new Vector2(transform.position.x, transform.position.y + enemyCirclecastOffset), enemyDetectorRadius, Vector2.right, enemyLayer);
     }
 
     void OnDrawGizmos()
@@ -307,16 +305,16 @@ public class PlayerController2_0 : MonoBehaviour
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.left * _wallRaycastLength);
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.right * _wallRaycastLength);
 
-        Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _enemyRaycastOffset), new Vector2(transform.position.x, transform.position.y + _enemyRaycastOffset) + Vector2.left * _enemyRaycastLength);
-        Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _enemyRaycastOffset), new Vector2(transform.position.x, transform.position.y + _enemyRaycastOffset) + Vector2.right * _enemyRaycastLength);
+        // enemy circlecast
+        Gizmos.DrawWireSphere(new Vector2(transform.position.x, transform.position.y + _enemyCirclecastOffset), _enemyDetectorRadius);
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag.Equals("Enemy"))
         {
-            if (_enemyOnLeft) _playerWallJump.JumpToTheRight(_knockBackAngle, _knockBackForce);
-            if (_enemyOnRight) _playerWallJump.JumpToTheLeft(_knockBackAngle, _knockBackForce);
+            if (transform.position.x - _enemyDetector.point.x < 0f) _playerWallJump.JumpToTheLeft(_knockBackAngle, _knockBackForce);
+            if (transform.position.x - _enemyDetector.point.x > 0f) _playerWallJump.JumpToTheRight(_knockBackAngle, _knockBackForce);
             _playerTakeDamage = true;
             _playerCurrentHealth--;
             Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
