@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - PlayerWeapon
+  - square1
+  - square2
+  - square1.1
+  - square2.1
   layers:
   - Default
   - TransparentFX

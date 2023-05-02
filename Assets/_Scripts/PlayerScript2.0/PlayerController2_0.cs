@@ -17,8 +17,6 @@ public class PlayerController2_0 : MonoBehaviour
     [Header("PlayerTakeDamage")]
     [SerializeField] int _playerHealth;
     [SerializeField] float _timeToResetPlayerAfterTakeDamage;
-    [SerializeField] long _knockBackForce;
-    [SerializeField] float _knockBackAngle;
     int _playerCurrentHealth;
     bool _playerTakeDamage = false;
 
@@ -133,7 +131,6 @@ public class PlayerController2_0 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
         FlipPlayer();
         CoyoteTime();
 
@@ -309,15 +306,17 @@ public class PlayerController2_0 : MonoBehaviour
         Gizmos.DrawWireSphere(new Vector2(transform.position.x, transform.position.y + _enemyCirclecastOffset), _enemyDetectorRadius);
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag.Equals("Enemy"))
+        //if (collision.gameObject.CompareTag("Enemy"))
+        //{
+        //    _playerTakeDamage = true;
+        //    _playerCurrentHealth--;
+        //    Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
+        //}
+        if (collision.CompareTag("Enemy"))
         {
-            if (transform.position.x - _enemyDetector.point.x < 0f) _playerWallJump.JumpToTheLeft(_knockBackAngle, _knockBackForce);
-            if (transform.position.x - _enemyDetector.point.x > 0f) _playerWallJump.JumpToTheRight(_knockBackAngle, _knockBackForce);
-            _playerTakeDamage = true;
-            _playerCurrentHealth--;
-            Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
+            print("touch");
         }
     }
 

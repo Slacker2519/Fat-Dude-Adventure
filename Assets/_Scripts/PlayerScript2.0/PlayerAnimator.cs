@@ -14,7 +14,7 @@ public class PlayerAnimator : MonoBehaviour
     static readonly int AirJump = Animator.StringToHash("WallJump");
     static readonly int Dash = Animator.StringToHash("Dash");
     static readonly int Attack = Animator.StringToHash("Attack01");
-    static readonly int TakeDamage = Animator.StringToHash("Knockback");
+    static readonly int TakeDamage = Animator.StringToHash("TakeDamage");
     
     Animator _anim;
     PlayerController2_0 _playerController;
@@ -44,7 +44,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (Time.time < _lockedTill) return _currentState;
 
-        if (_playerController.PlayerTakeDamage) return LockState(TakeDamage, _takeDamageAnimDuration);
+        if (_playerController.PlayerTakeDamage) return TakeDamage;
         if (Input.GetMouseButtonDown(0)) return LockState(Attack, _attackAnimDuration);
         if (_playerController.AirJumping) return AirJump;
         if (_playerController.IsDashing) return LockState(Dash, _dashAnimDuration);
