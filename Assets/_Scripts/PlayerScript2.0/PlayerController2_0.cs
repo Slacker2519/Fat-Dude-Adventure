@@ -79,11 +79,11 @@ public class PlayerController2_0 : MonoBehaviour
     bool _wallOnRight;
     bool _wallOnLeft;
 
-    [Header("EnemyDetectionValue")]
-    [SerializeField] LayerMask _enemyLayer;
-    [SerializeField] float _enemyDetectorRadius;
-    [SerializeField] float _enemyCirclecastOffset;
-    RaycastHit2D _enemyDetector;
+    //[Header("EnemyDetectionValue")]
+    //[SerializeField] LayerMask _enemyLayer;
+    //[SerializeField] float _enemyDetectorRadius;
+    //[SerializeField] float _enemyCirclecastOffset;
+    //RaycastHit2D _enemyDetector;
 
     [Header("OnGroundValues")]
     [SerializeField] float _groundedGravity;
@@ -145,9 +145,7 @@ public class PlayerController2_0 : MonoBehaviour
         PhysicsOnWall();
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
-        EnemyDetection(_enemyDetectorRadius, _enemyCirclecastOffset, _enemyLayer);
-
-        if (_playerTakeDamage) return;
+        //EnemyDetection(_enemyDetectorRadius, _enemyCirclecastOffset, _enemyLayer);
         if (_playerAttacking) return;
         if (_isDashing) return;
         _playerRun.MovePlayer(_playerCurrentAcceleration, _maxMoveSpeed, ref _horizontalDirection);
@@ -282,10 +280,10 @@ public class PlayerController2_0 : MonoBehaviour
         _wallOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + wallRaycastOffset), Vector2.right, wallRaycastLength, wallLayer);
     }
 
-    void EnemyDetection(float enemyDetectorRadius, float enemyCirclecastOffset, LayerMask enemyLayer)
-    {
-        _enemyDetector = Physics2D.CircleCast(new Vector2(transform.position.x, transform.position.y + enemyCirclecastOffset), enemyDetectorRadius, Vector2.right, enemyLayer);
-    }
+    //void EnemyDetection(float enemyDetectorRadius, float enemyCirclecastOffset, LayerMask enemyLayer)
+    //{
+    //    _enemyDetector = Physics2D.CircleCast(new Vector2(transform.position.x, transform.position.y + enemyCirclecastOffset), enemyDetectorRadius, Vector2.right, enemyLayer);
+    //}
 
     void OnDrawGizmos()
     {
@@ -303,20 +301,26 @@ public class PlayerController2_0 : MonoBehaviour
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.right * _wallRaycastLength);
 
         // enemy circlecast
-        Gizmos.DrawWireSphere(new Vector2(transform.position.x, transform.position.y + _enemyCirclecastOffset), _enemyDetectorRadius);
+        //Gizmos.DrawWireSphere(new Vector2(transform.position.x, transform.position.y + _enemyCirclecastOffset), _enemyDetectorRadius);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            _playerTakeDamage = true;
+            _playerCurrentHealth--;
+            Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //if (collision.gameObject.CompareTag("Enemy"))
-        //{
-        //    _playerTakeDamage = true;
-        //    _playerCurrentHealth--;
-        //    Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
-        //}
-        if (collision.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag("EnemyWeapon"))
         {
-            print("touch");
+            _playerTakeDamage = true;
+            _playerCurrentHealth--;
+            Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
         }
     }
 

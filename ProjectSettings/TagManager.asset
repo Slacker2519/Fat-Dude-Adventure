@@ -6,10 +6,7 @@ TagManager:
   tags:
   - Enemy
   - PlayerWeapon
-  - square1
-  - square2
-  - square1.1
-  - square2.1
+  - EnemyWeapon
   layers:
   - Default
   - TransparentFX
@@ -46,4 +43,13 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: BackGround
+    uniqueID: 1580661185
+    locked: 0
+  - name: Character
+    uniqueID: 1583972681
+    locked: 0
+  - name: Ground
+    uniqueID: 472439757
     locked: 0

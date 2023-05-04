@@ -26,11 +26,11 @@ public abstract class EnemyBase : MonoBehaviour
         transform.Rotate(0, 180, 0);
     }
 
-    protected virtual Collider2D InRangeAttack()
-    {
-        Collider2D hit = Physics2D.OverlapCircle(transform.position, 0);
-        return hit;
-    }
+    //protected virtual Collider2D InRangeAttack()
+    //{
+    //    Collider2D hit = Physics2D.OverlapCircle(transform.position, 0);
+    //    return hit;
+    //}
 
     protected virtual void Attack() { }
 
@@ -39,5 +39,8 @@ public abstract class EnemyBase : MonoBehaviour
         
     }
 
-    protected virtual void Die() { }
+    public virtual IEnumerator Die() 
+    { 
+        yield return null;
+    }
 }

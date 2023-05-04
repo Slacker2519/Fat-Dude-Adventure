@@ -6,7 +6,7 @@ public class CloseRangeEnemy : EnemyBase
 {
     [Header("Components")]
     [SerializeField] Rigidbody2D _rb2D;
-    [SerializeField] Animator _animator;
+    public Animator Anim;
 
     [Header("WallCheckVariables")]
     [SerializeField] LayerMask _wallsLayer;
@@ -28,27 +28,27 @@ public class CloseRangeEnemy : EnemyBase
     int _enemyHorizontalDirection = -1;
 
     [Header("AttackPlayer")]
-    [SerializeField] LayerMask _targetLayer;
-    [SerializeField] float _targetAttackCircleCastRadius;
-    [SerializeField] float _targetDetectRaycastYOffset;
+    [SerializeField] float _attackRange;
     int _attackVelocity = 0;
+    public bool Attacking;
 
     [Header("TakeDamageVariables")]
-    [SerializeField] float _knockBackAngle;
-    [SerializeField] long _knockBackForce;
-    [SerializeField] float _recoveringTime;
+    public float KnockBackAngle;
+    public long KnockBackForce;
+    public float RecoveringTime;
     bool _takingDamage;
+    public bool IsDead = false;
 
     public override void Start()
     {
         base.Start();
         _rb2D = GetComponent<Rigidbody2D>();
+        CurrentHealth = Health;
     }
 
     public override void Update()
     {
         base.Update();
-        InRangeAttack();
         CalculateFLipCharacter();
     }
 
@@ -63,18 +63,18 @@ public class CloseRangeEnemy : EnemyBase
 
     private void CalculateFLipCharacter()
     {
-        if (InRangeAttack())
-        {
-            if (transform.position.x - InRangeAttack().transform.position.x < 0 && !facingRight)
-            {
-                GraphicFlip();
-            }
+        //if (InRangeAttack())
+        //{
+        //    if (transform.position.x - InRangeAttack().transform.position.x < 0 && !facingRight)
+        //    {
+        //        GraphicFlip();
+        //    }
 
-            else if (transform.position.x - InRangeAttack().transform.position.x > 0 && facingRight)
-            {
-                GraphicFlip();
-            }
-        }
+        //    else if (transform.position.x - InRangeAttack().transform.position.x > 0 && facingRight)
+        //    {
+        //        GraphicFlip();
+        //    }
+        //}
 
         if (_rb2D.velocity.x < 0 && facingRight)
         {
@@ -88,7 +88,11 @@ public class CloseRangeEnemy : EnemyBase
 
     void CharacterState()
     {
-        if (!InRangeAttack())
+        if (CurrentHealth == 0)
+        {
+            _characterVelocity = 0;
+        }
+        else if (Attacking == false && CurrentHealth > 0)
         {
             _characterVelocity = _patrolVelocity;
 
@@ -107,8 +111,10 @@ public class CloseRangeEnemy : EnemyBase
         }
 
         _rb2D.velocity = new Vector2(_characterVelocity * _enemyHorizontalDirection, _rb2D.velocity.y);
-        _animator.SetFloat("EnemySpeed", _characterVelocity);
-        _animator.SetBool("EnemyAttack", InRangeAttack());
+
+        if (_takingDamage) return;
+        Anim.SetFloat("EnemySpeed", _characterVelocity);
+        Anim.SetBool("EnemyAttack", Attacking);
     }
 
     protected override void Attack()
@@ -116,14 +122,19 @@ public class CloseRangeEnemy : EnemyBase
         base.Attack();
     }
 
-    protected override void Die()
-    {
-        base.Die();
-    }
-
     protected override void TakeDamage()
     {
         base.TakeDamage();
+    }
+
+    public override IEnumerator Die()
+    {
+        if (CurrentHealth <= 0)
+        {
+            
+            yield return new WaitForSeconds(2);
+            Destroy(gameObject);
+        }
     }
 
     public void KnockBack(float knockBackAngle, long knockBackForce)
@@ -134,19 +145,11 @@ public class CloseRangeEnemy : EnemyBase
         _rb2D.AddForce(new Vector2(xAngle, yAngle).normalized * knockBackForce * 100f);
     }
 
-    public void JumpToTheLeft(float wallJumpAngle, long wallJumpForce)
-    {
-        float xAngle = Mathf.Cos(wallJumpAngle * Mathf.Deg2Rad);
-        float yAngle = Mathf.Sin(wallJumpAngle * Mathf.Deg2Rad);
-        _rb2D.velocity = Vector2.zero;
-        _rb2D.AddForce(new Vector2(xAngle * -1f, yAngle).normalized * wallJumpForce * 100f);
-    }
-
-    protected override Collider2D InRangeAttack()
-    {
-        Collider2D attackingTarget = Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y + _targetDetectRaycastYOffset), _targetAttackCircleCastRadius, _targetLayer);
-        return attackingTarget;
-    }
+    //protected override Collider2D InRangeAttack()
+    //{
+    //    Collider2D attackingTarget = Physics2D.OverlapCircle(new Vector2(transform.position.x, transform.position.y + _targetDetectRaycastYOffset), _targetAttackCircleCastRadius, _targetLayer);
+    //    return attackingTarget;
+    //}
 
     void WallsDetection(float wallsRaycastOffset, float wallsRaycastLength, LayerMask wallsLayer)
     {
@@ -160,11 +163,25 @@ public class CloseRangeEnemy : EnemyBase
         _noRightLedge = Physics2D.Raycast(new Vector2(transform.position.x - ledgesRaycastOffset, transform.position.y), Vector2.down, ledgesRaycastLength, groundLayer);
     }
 
-    IEnumerator RecoverTime()
+    public IEnumerator RecoverTime()
     {
         _takingDamage = true;
-        yield return new WaitForSeconds(_recoveringTime);
+        yield return new WaitForSeconds(RecoveringTime);
         _takingDamage = false;
+    }
+
+    private void AttackTarget(Collider2D collision)
+    {
+        Attacking = true;
+
+        if (transform.position.x - collision.transform.position.x < 0 && !facingRight)
+        {
+            GraphicFlip();
+        }
+        else if (transform.position.x - collision.transform.position.x > 0 && facingRight)
+        {
+            GraphicFlip();
+        }
     }
 
     void OnDrawGizmos()
@@ -180,25 +197,16 @@ public class CloseRangeEnemy : EnemyBase
         Gizmos.DrawLine(new Vector2(transform.position.x - _ledgesRaycastOffset, transform.position.y), new Vector2(transform.position.x - _ledgesRaycastOffset, transform.position.y) + Vector2.down * _ledgesRaycastLength);
 
         // player detector
-        Gizmos.DrawWireSphere(new Vector2(transform.position.x, transform.position.y + _targetDetectRaycastYOffset), _targetAttackCircleCastRadius);
+        //Gizmos.DrawWireSphere(new Vector2(transform.position.x, transform.position.y + _targetDetectRaycastYOffset), _targetAttackCircleCastRadius);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!InRangeAttack()) return;
-
-        if (collision.tag.Equals("PlayerWeapon"))
+        if (collision.CompareTag("Player"))
         {
-            StartCoroutine(RecoverTime());
+            if (Vector2.Distance(collision.transform.position, transform.position) > _attackRange) return;
 
-            if (transform.position.x - InRangeAttack().transform.position.x < 0)
-            {
-                KnockBack(90 + _knockBackAngle, _knockBackForce);
-            }
-            else if (transform.position.x - InRangeAttack().transform.position.x > 0)
-            {
-                KnockBack(_knockBackAngle, _knockBackForce);
-            }
+            AttackTarget(collision);
         }
     }
 }

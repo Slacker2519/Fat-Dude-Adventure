@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1604701478
+--- !u!1 &1454784590
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,46 +8,60 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1604701479}
-  - component: {fileID: 1604701480}
+  - component: {fileID: 1454784591}
+  - component: {fileID: 1454784592}
+  - component: {fileID: 209297587214555799}
   m_Layer: 8
-  m_Name: EnemyHitBox
+  m_Name: AttackRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1604701479
+--- !u!4 &1454784591
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1604701478}
+  m_GameObject: {fileID: 1454784590}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.584, z: 0}
+  m_LocalPosition: {x: 0, y: 0.602, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2956477211991810161}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!70 &1604701480
-CapsuleCollider2D:
+--- !u!58 &1454784592
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1604701478}
+  m_GameObject: {fileID: 1454784590}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0, y: 0.03454089}
-  m_Size: {x: 0.5, y: 1.2533021}
-  m_Direction: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 1.5
+--- !u!114 &209297587214555799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454784590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83a5e3da78e5ef04abb270eb5966aa01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _closeRangeEnemy: {fileID: 91109083}
 --- !u!1 &2956477211601235956
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,7 +74,7 @@ GameObject:
   - component: {fileID: 140139318}
   m_Layer: 8
   m_Name: WeaponCollider
-  m_TagString: Enemy
+  m_TagString: EnemyWeapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -90,7 +104,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.05142498, y: 0.06196499}
@@ -139,8 +153,9 @@ Transform:
   m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1604701479}
+  - {fileID: 1454784591}
   - {fileID: 2956477211601235959}
+  - {fileID: 3929585623332552801}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -182,8 +197,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1583972681
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 66c32ec536cce5d4d89bd64a0e6be3c7, type: 3}
   m_Color: {r: 0, g: 0.7686548, b: 1, a: 1}
@@ -266,26 +281,85 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 792f0c54eed2e994184ddf5b87830e2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 0
+  Health: 2
   CurrentHealth: 0
   _rb2D: {fileID: 2956477211991810160}
-  _animator: {fileID: 2956477211991810162}
+  Anim: {fileID: 2956477211991810162}
   _wallsLayer:
     serializedVersion: 2
     m_Bits: 64
   _wallsRaycastLength: 0.7
-  _wallsRaycastOffset: 1.2
+  _wallsRaycastOffset: 0.21
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  _ledgesRaycastLength: 0.5
+  _ledgesRaycastLength: 0.3
   _ledgesRaycastOffset: 0.7
   _patrolVelocity: 3
-  _targetLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  _targetAttackCircleCastRadius: 1
-  _targetDetectRaycastYOffset: 0.75
-  _knockBackAngle: 70
-  _knockBackForce: 200
-  _recoveringTime: 1
+  _attackRange: 1.8
+  Attacking: 0
+  KnockBackAngle: 70
+  KnockBackForce: 200
+  RecoveringTime: 0.7
+--- !u!1 &4537953841294741091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3929585623332552801}
+  - component: {fileID: 5425089158433483253}
+  - component: {fileID: 6764302182035826780}
+  m_Layer: 8
+  m_Name: HitBox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3929585623332552801
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4537953841294741091}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.615, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2956477211991810161}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!70 &5425089158433483253
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4537953841294741091}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0, y: 0.0068469048}
+  m_Size: {x: 0.5, y: 1.2419138}
+  m_Direction: 0
+--- !u!114 &6764302182035826780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4537953841294741091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 181d442c8bf3b7543919a8a03d8685b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _closeRangeEnemy: {fileID: 91109083}
