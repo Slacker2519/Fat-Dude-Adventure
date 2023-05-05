@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 34c8c737db315454e82240426d99409e
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Comic Neue Light
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: b3d87bb5f0a01ef4593320bac7290fc9, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -14,6 +14,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 4
     m_ConditionEvent: EnemySpeed
     m_EventTreshold: 0.1
+  - m_ConditionMode: 2
+    m_ConditionEvent: EnemyDie
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 829721368465944255}
   m_Solo: 0
@@ -42,6 +45,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 4
     m_ConditionEvent: EnemySpeed
     m_EventTreshold: 0.001
+  - m_ConditionMode: 2
+    m_ConditionEvent: EnemyDie
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -3410987200613762953}
   m_Solo: 0
@@ -67,9 +73,12 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: EnemyAttack
     m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: EnemyDie
+    m_EventTreshold: 0.001
   - m_ConditionMode: 4
     m_ConditionEvent: EnemySpeed
-    m_EventTreshold: 0.001
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -3410987200613762953}
   m_Solo: 0
@@ -92,8 +101,8 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 3
-    m_ConditionEvent: EnemySpeed
+  - m_ConditionMode: 1
+    m_ConditionEvent: EnemyDie
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -2571822437545299390}
@@ -157,7 +166,7 @@ AnimatorStateMachine:
     m_Position: {x: 310, y: 210, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2571822437545299390}
-    m_Position: {x: 740, y: 130, z: 0}
+    m_Position: {x: 730, y: 140, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: -4806214671532394568}
@@ -179,8 +188,7 @@ AnimatorState:
   m_Name: Knockback 1
   m_Speed: 1
   m_CycleOffset: 0
-  m_Transitions:
-  - {fileID: 3492474272658078740}
+  m_Transitions: []
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
@@ -210,6 +218,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: EnemyAttack
     m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: EnemyDie
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 5109395455365565386}
   m_Solo: 0
@@ -238,19 +249,19 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: EnemyAttack
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: EnemyDie
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -277,6 +288,9 @@ AnimatorStateTransition:
     m_EventTreshold: 0.001
   - m_ConditionMode: 2
     m_ConditionEvent: EnemyAttack
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: EnemyDie
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 5109395455365565386}
@@ -334,6 +348,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 4
     m_ConditionEvent: EnemySpeed
     m_EventTreshold: 0.001
+  - m_ConditionMode: 2
+    m_ConditionEvent: EnemyDie
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 829721368465944255}
   m_Solo: 0
@@ -345,28 +362,6 @@ AnimatorStateTransition:
   m_ExitTime: 0.1
   m_HasExitTime: 0
   m_HasFixedDuration: 0
-  m_InterruptionSource: 0
-  m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
---- !u!1101 &3492474272658078740
-AnimatorStateTransition:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_Conditions: []
-  m_DstStateMachine: {fileID: 0}
-  m_DstState: {fileID: 0}
-  m_Solo: 0
-  m_Mute: 0
-  m_IsExit: 1
-  serializedVersion: 3
-  m_TransitionDuration: 0.25
-  m_TransitionOffset: 0
-  m_ExitTime: 0.625
-  m_HasExitTime: 1
-  m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1

@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - PlayerWeapon
   - EnemyWeapon
+  - Heal
+  - Trap
   layers:
   - Default
   - TransparentFX
@@ -46,6 +48,9 @@ TagManager:
     locked: 0
   - name: BackGround
     uniqueID: 1580661185
+    locked: 0
+  - name: Item
+    uniqueID: 3026581875
     locked: 0
   - name: Character
     uniqueID: 1583972681

@@ -145,7 +145,6 @@ public class PlayerController2_0 : MonoBehaviour
         PhysicsOnWall();
         GroundCheck(_groundRaycastOffset, _groundRaycastLength, _groundLayer);
         WallCheck(_wallRaycastLength, _wallRaycastOffset, _wallLayer);
-        //EnemyDetection(_enemyDetectorRadius, _enemyCirclecastOffset, _enemyLayer);
         if (_playerAttacking) return;
         if (_isDashing) return;
         _playerRun.MovePlayer(_playerCurrentAcceleration, _maxMoveSpeed, ref _horizontalDirection);
@@ -280,11 +279,6 @@ public class PlayerController2_0 : MonoBehaviour
         _wallOnRight = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + wallRaycastOffset), Vector2.right, wallRaycastLength, wallLayer);
     }
 
-    //void EnemyDetection(float enemyDetectorRadius, float enemyCirclecastOffset, LayerMask enemyLayer)
-    //{
-    //    _enemyDetector = Physics2D.CircleCast(new Vector2(transform.position.x, transform.position.y + enemyCirclecastOffset), enemyDetectorRadius, Vector2.right, enemyLayer);
-    //}
-
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -299,9 +293,6 @@ public class PlayerController2_0 : MonoBehaviour
         // wall raycast
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.left * _wallRaycastLength);
         Gizmos.DrawLine(new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset), new Vector2(transform.position.x, transform.position.y + _wallRaycastOffset) + Vector2.right * _wallRaycastLength);
-
-        // enemy circlecast
-        //Gizmos.DrawWireSphere(new Vector2(transform.position.x, transform.position.y + _enemyCirclecastOffset), _enemyDetectorRadius);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -316,11 +307,25 @@ public class PlayerController2_0 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("EnemyWeapon"))
+        if (collision.CompareTag("EnemyWeapon") || collision.CompareTag("Trap"))
         {
             _playerTakeDamage = true;
             _playerCurrentHealth--;
             Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
+        }
+
+        if (collision.CompareTag("Heal"))
+        {
+            _playerCurrentHealth++;
+            if (_playerCurrentHealth > _playerHealth)
+            {
+                _playerCurrentHealth = _playerHealth;
+            }
+        }
+
+        if (_playerCurrentHealth < 0)
+        {
+            Destroy(gameObject);
         }
     }
 

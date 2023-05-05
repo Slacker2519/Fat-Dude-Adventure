@@ -131,7 +131,9 @@ public class CloseRangeEnemy : EnemyBase
     {
         if (CurrentHealth <= 0)
         {
-            
+            IsDead = true;
+            Anim.SetBool("EnemyDie", IsDead);
+            IsDead = false;
             yield return new WaitForSeconds(2);
             Destroy(gameObject);
         }
