@@ -9,6 +9,7 @@ TagManager:
   - EnemyWeapon
   - Heal
   - Trap
+  - Goal
   layers:
   - Default
   - TransparentFX

@@ -8,7 +8,7 @@ public class EnemyTakeDamage : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag.Equals("PlayerWeapon") && collision.gameObject.tag.Equals("Trap"))
+        if (collision.gameObject.tag.Equals("PlayerWeapon") || collision.gameObject.tag.Equals("Trap"))
         {
             _closeRangeEnemy.CurrentHealth--;
             _closeRangeEnemy.

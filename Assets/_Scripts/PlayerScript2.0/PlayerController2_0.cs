@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class PlayerController2_0 : MonoBehaviour
 {
     #region Variables
+    public GameUIController UI;
     Rigidbody2D _rb;
     PlayerRun _playerRun;
     PlayerFall _playerFall;
@@ -109,6 +111,8 @@ public class PlayerController2_0 : MonoBehaviour
     public bool Jumping { get { return _jumping; } }
     public bool AirJumping { get { return _airJumping; } }
     public bool PlayerTakeDamage { get { return _playerTakeDamage; } }
+    public float PlayerHealth { get { return _playerHealth; } }
+    public float PlayerCurrentHealth { get { return _playerCurrentHealth; } }
     #endregion
 
     // Start is called before the first frame update
@@ -126,6 +130,7 @@ public class PlayerController2_0 : MonoBehaviour
         _playerCurrentAcceleration = _playerAcceleration;
         _airHangTimeCounter = _airHangTime;
         _airJumpValue = _airJumpNumber;
+        UI.UpdatePlayerHp();
     }
 
     // Update is called once per frame
@@ -136,6 +141,7 @@ public class PlayerController2_0 : MonoBehaviour
 
         if (_isDashing) return;
         MovementLogic();
+        UI.UpdatePlayerHp();
     }
 
     void FixedUpdate()
@@ -311,6 +317,10 @@ public class PlayerController2_0 : MonoBehaviour
         {
             _playerTakeDamage = true;
             _playerCurrentHealth--;
+            if (_playerCurrentHealth < 0)
+            {
+                _playerCurrentHealth = -1;
+            }
             Invoke("ResetPlayerAfterTakeDamage", _timeToResetPlayerAfterTakeDamage);
         }
 
@@ -323,8 +333,14 @@ public class PlayerController2_0 : MonoBehaviour
             }
         }
 
+        if (collision.CompareTag("Goal"))
+        {
+            UI.PlayerWinGame();
+        }
+
         if (_playerCurrentHealth < 0)
         {
+            UI.PlayerLoseGame();
             Destroy(gameObject);
         }
     }

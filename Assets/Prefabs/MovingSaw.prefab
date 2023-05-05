@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6574298971902179671}
   - component: {fileID: 6574298971902179664}
   - component: {fileID: 6574298971902179669}
-  - component: {fileID: 6574298971902179666}
   m_Layer: 0
   m_Name: MovingSaw
   m_TagString: Trap
@@ -116,17 +115,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _duration: 0.5
---- !u!114 &6574298971902179666
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6574298971902179665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1affb29340b239e4a9ad750dfdfd1b16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   _distance: -4
-  _duration: 1
+  TrapType: 0

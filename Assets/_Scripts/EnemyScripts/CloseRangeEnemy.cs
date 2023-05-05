@@ -134,7 +134,7 @@ public class CloseRangeEnemy : EnemyBase
             IsDead = true;
             Anim.SetBool("EnemyDie", IsDead);
             IsDead = false;
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(1);
             Destroy(gameObject);
         }
     }
